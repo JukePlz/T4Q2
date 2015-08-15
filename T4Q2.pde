@@ -17,4 +17,12 @@ void draw()
   ellipse(width/2, height/2, 10, 10);
   println("Hello Dave...");
   noLoop();
+  // Other comment
+
+  newFunction();
+}
+
+void newFunction()
+{
+  println("something!");
 }
