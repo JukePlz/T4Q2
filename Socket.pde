@@ -1,12 +1,11 @@
 class Socket //<>//
 {
-  String estado;
-  int id;
   int grosor;
-  color colr;
   int posX;
   int posY;
   int orden;
+  String estado;
+  color colr;
 
   Socket(int _posX, int _posY, String _estado)
   {

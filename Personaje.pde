@@ -1,12 +1,15 @@
 class Personaje
 {
-  int posX;
-  int posY;
-  String estado = "quieto";
   FBox robertoLaCaja;
   FBox robertoLaCajaTemp;
   Socket eleccion = null;
+
+  int posX;
+  int posY;
+  String estado = "quieto";
+
   PImage robertoCurrentImg = robertoImg;
+
 
   Personaje(int _posX, int _posY)
   {
@@ -53,7 +56,6 @@ class Personaje
     noStroke();
     fill(255, 0, 0);
     image(robertoCurrentImg, posX, posY);
-    //rect(posX, posY, 25, 32);
     popStyle();
   }
 
@@ -69,13 +71,11 @@ class Personaje
       {
         --posX;
         robertoCurrentImg = robertoImg2;
-      }//
-      else if ( posX < eleccion.posX )
+      } else if ( posX < eleccion.posX )
       {
         ++posX;
         robertoCurrentImg = robertoImg;
-      }//
-      else if ( posY > eleccion.posY )
+      } else if ( posY > eleccion.posY )
       {
         --posY;
       } else
@@ -98,12 +98,10 @@ class Personaje
       if (estado == "quieto" && eleccion!=null && eleccion.getSocketHeight() == 0)  // WIN
       {
         gameOver = true;
-      }//
-      else if (magma.alturaLava + 912 < posY)
+      } else if (magma.alturaLava + 912 < posY)
       {
         gameOver = true;
-      }//
-      else if (posY == height-16)  // CAMINA HACIA LA PRIMERA CUERDA DESDE EL PISO.
+      } else if (posY == height-16)  // CAMINA HACIA LA PRIMERA CUERDA DESDE EL PISO.
       {
         int distancia = -1;
         Socket eleccionTemp = null;
@@ -120,11 +118,8 @@ class Personaje
         {
           estado = "moviendose";
           eleccion = eleccionTemp;
-          //posX = eleccion.posX;
-          //posY = eleccion.posY;
         }
-      } // FIN
-      else if ((eleccion != null && eleccion.estado != "soga") || estado == "colision") // SE CAE CON COLISION O AL PERDER LA CUERDA.
+      } else if ((eleccion != null && eleccion.estado != "soga") || estado == "colision") // SE CAE CON COLISION O AL PERDER LA CUERDA.
       {
         estado = "cayendo";
         robertoLaCaja.setPosition(0, 0);
@@ -135,8 +130,7 @@ class Personaje
         robertoLaCajaTemp.setRestitution(0.4);
         robertoLaCajaTemp.setDensity(1000);
         robertoLaCajaTemp.setPosition(posX, posY);
-      } // FIN
-      else if (estado == "quieto")  // PATHFINDING PARA ARRIBA Y COSTADOS
+      } else if (estado == "quieto")  // PATHFINDING PARA ARRIBA Y COSTADOS
       {
         int orden = -1;
         Socket eleccionTemp = null;
@@ -152,8 +146,6 @@ class Personaje
         {
           estado = "moviendose";
           eleccion = eleccionTemp;
-          //posX = eleccion.posX;
-          //posY = eleccion.posY;
         } else  // PATHFINDING DE LOS COSTADOS
         {
           orden = eleccion.orden;
@@ -168,12 +160,10 @@ class Personaje
             {
               estado = "moviendose";
               eleccion = eleccionTemp;
-              //posX = eleccion.posX;
-              //posY = eleccion.posY;
             }
           }
-        } // FIN
-      } // FIN
+        }
+      }
     } else if (estado == "cayendo" && posY >= height-16)
     {
       posY = height-16;

@@ -39,8 +39,6 @@ class Lava
 
     pushStyle();
     imageMode(CENTER);
-    //println(alturaLava);
-
     image(lava, width/2 + sway, alturaLava + 1200);
     popStyle();
   }
@@ -50,7 +48,6 @@ class Lava
     if (erupcionando)
     {
       --alturaLava;
-      //println(alturaLava);
     }
   }
 }

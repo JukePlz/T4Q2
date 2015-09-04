@@ -1,15 +1,16 @@
 class Piedras
 {
-  int posx;
-  int posy;
+  int posX;
+  int posY;
   int radio;
-  boolean cayendo = false;
+  boolean cayendo;
 
   Piedras(int _posx, int _posy, int _radio)
   {
-    posx = _posx;
-    posy = _posy;
+    posX = _posx;
+    posY = _posy;
     radio = _radio;
+    cayendo = false;
   }
 
   void dibujar()
@@ -17,7 +18,7 @@ class Piedras
     if ((cayendo) && frameCount % 50 == 0)
     {
       FCircle c = new FCircle(radio);
-      c.setPosition(random(305, 705), posy);
+      c.setPosition(random(305, 705), posY);
       c.setName( "roca" + int(random(0, 4)) );
       c.setVelocity(random(-500, 500), 0);
       c.setFillColor(color(#c87e4d));
@@ -38,12 +39,9 @@ class Piedras
         imageMode(CENTER);
         pushMatrix();
         translate(objetoi.getX(), objetoi.getY());
-        //rotate(radians(frameCount%360) * 2);
         rotate(objetoi.getRotation());
         image(roca[int(objetoi.getName().substring(4))], 0, 0);
         popMatrix();
-
-        //ellipse(objetoi.getX(), objetoi.getY(), radio, radio);
         popStyle();
       }
     }

@@ -6,14 +6,20 @@ FWorld mundo;
 FBox sombraIzq;
 FBox sombraDer;
 
-
 // OBJETOS
 Socket[][] maSockets;
 Lava magma;
 Piedras piedra;
 Personaje roberto;
 
-// CONSTANTES
+// OTRAS VARIABLES
+int cantActivos;
+int maxActivos;
+int ordenSogas;
+boolean mouseApretado;
+boolean gameOver;
+
+// VARIABLES GRAFICOS
 PImage fondo;
 PImage pared;
 PImage lava;
@@ -21,12 +27,6 @@ PImage soga;
 PImage robertoImg;
 PImage robertoImg2;
 PImage[] roca = new PImage[4];
-
-boolean mouseApretado;
-boolean gameOver;
-int cantActivos;
-int maxActivos;
-int ordenSogas;
 
 void setup()
 {
@@ -83,7 +83,6 @@ void draw()
 
 void mousePressed()
 {
-  //println(mouseX, mouseY);
   mouseApretado = true;
 
   if (gameOver)
@@ -101,6 +100,5 @@ void contactStarted( FContact contact )
   if ((cuerpo1.getName().substring(0, 4).equals("roca") && cuerpo2.getName() == "roberto") || (cuerpo1.getName() == "roberto" && cuerpo2.getName().substring(0, 4).equals("roca"))) 
   {
     roberto.estado = "colision";
-    //println("boom");
   }
 }
