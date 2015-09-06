@@ -6,6 +6,8 @@ class Personaje
 
   int posX;
   int posY;
+  int alto;
+  int ancho;
   String estado = "quieto";
 
   PImage robertoCurrentImg = robertoImg;
@@ -15,7 +17,9 @@ class Personaje
   {
     posX = _posX;
     posY = _posY;
-    robertoLaCaja = new FBox(25, 32);
+    alto = 64;
+    ancho = 50;
+    robertoLaCaja = new FBox(ancho, alto);  //25 32
     mundo.add(robertoLaCaja);
     robertoLaCaja.setName( "roberto" );
     robertoLaCaja.setStatic(true);
@@ -55,6 +59,7 @@ class Personaje
     imageMode(CENTER);
     noStroke();
     fill(255, 0, 0);
+    //pointLight(255, 255, 255, posX, posY, 0);
     image(robertoCurrentImg, posX, posY);
     popStyle();
   }
@@ -101,7 +106,7 @@ class Personaje
       } else if (magma.alturaLava + 912 < posY)
       {
         gameOver = true;
-      } else if (posY == height-16)  // CAMINA HACIA LA PRIMERA CUERDA DESDE EL PISO.
+      } else if (posY == height-(alto/2))  // CAMINA HACIA LA PRIMERA CUERDA DESDE EL PISO.
       {
         int distancia = -1;
         Socket eleccionTemp = null;
@@ -164,18 +169,18 @@ class Personaje
           }
         }
       }
-    } else if (estado == "cayendo" && posY >= height-16)
+    } else if (estado == "cayendo" && posY >= height-(alto/2))
     {
-      posY = height-16;
+      posY = height-(alto/2);
       mundo.remove(robertoLaCajaTemp);
       robertoLaCajaTemp = null;
       estado = "quieto";
     }
 
-    if ( posY == height-16 && robertoLaCaja.isSensor() )
+    if ( posY == height-(alto/2) && robertoLaCaja.isSensor() )
     {
       robertoLaCaja.setSensor(false);
-    } else if (posY < height-16 && !robertoLaCaja.isSensor())
+    } else if (posY < height-(alto/2) && !robertoLaCaja.isSensor())
     {
       robertoLaCaja.setSensor(true);
     }

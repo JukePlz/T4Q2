@@ -43,7 +43,10 @@ class Socket //<>//
     }
     if (estado == "soga" || estado == "disponible")
     {
+      pushStyle();
+      noStroke();
       ellipse(posX, posY, grosor, grosor);
+      popStyle();
     }
   }
 

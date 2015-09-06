@@ -1,14 +1,14 @@
-class Piedras
+class Piedra
 {
   int posX;
   int posY;
   int radio;
   boolean cayendo;
 
-  Piedras(int _posx, int _posy, int _radio)
+  Piedra(int _posX, int _posY, int _radio)
   {
-    posX = _posx;
-    posY = _posy;
+    posX = _posX;
+    posY = _posY;
     radio = _radio;
     cayendo = false;
   }
@@ -36,7 +36,15 @@ class Piedras
         pushStyle();
         fill(color(#c87e4d));
         noStroke();
-        imageMode(CENTER);
+
+        if (lightSystem == 1)
+        {
+          imageMode(CENTER);
+          blendMode(ADD);
+          image(aura, objetoi.getX(), objetoi.getY());
+          blendMode(BLEND);
+        }
+
         pushMatrix();
         translate(objetoi.getX(), objetoi.getY());
         rotate(objetoi.getRotation());
