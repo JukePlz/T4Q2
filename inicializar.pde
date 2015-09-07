@@ -24,24 +24,23 @@ void inicializar()
   roberto = new Personaje(int(random(width/4, width*3/4)), height-32); // Constructor (POSX, POSY)
 
   // Vibracion de la luz, solo LightSystem = 2
-  contadorLights = new Contador(1, 50, 2); // Constructor (MIN, MAX, DELAY)
+  contadorLights = new Contador(1, 50, 2, 1);   // Constructor (MIN, MAX, DELAY, INCREMENTO)
 
-  /*
-   sombraIzq = new FBox(900, 5);
-   sombraDer = new FBox(900, 5);
-   sombraIzq.setPosition(150, height/2);
-   sombraDer.setPosition(width - 150, height/2);
-   sombraIzq.adjustRotation(degrees(-90));
-   sombraDer.adjustRotation(degrees(90));
-   sombraIzq.setStatic(true);
-   sombraDer.setStatic(true);
-   mundo.add(sombraIzq);
-   mundo.add(sombraDer);
-   */
+  // Glow de las rajaduras en la pared
+  contadorCracksPared = new Contador(30, 150, 1, 2);  // Constructor (MIN, MAX, DELAY, INCREMENTO)
 
-  //mundo.setEdges();
-  //mundo.remove(mundo.top);
-  //mundo.remove(mundo.bottom);
+  // Glow de las rajaduras en la pared
+  contadorCracksRocas = new Contador(30, 150, 1, 2);  // Constructor (MIN, MAX, DELAY, INCREMENTO)
+
+  bordeIzq = new FLine(offset1, 0, offset2, 768);
+  bordeDer = new FLine(offset4, 768, offset3, 0);
+  bordeIzq.setStatic(true);
+  bordeDer.setStatic(true);
+  bordeIzq.setStroke(255);
+  bordeDer.setStroke(255);
+  mundo.add(bordeIzq);
+  mundo.add(bordeDer);
+  
   mundo.setGravity( 0, 1000 );
   mundo.setGrabbable(false);
 

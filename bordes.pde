@@ -1,5 +1,10 @@
 void bordes()
 {
+  sombraIzq.setStart(offset1, 0);
+  sombraIzq.setEnd(offset2, 768);
+  sombraDer.setStart(offset4, 768);
+  sombraDer.setEnd(offset3, 0);
+
   pushStyle();
   fill(0);
 

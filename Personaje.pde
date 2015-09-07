@@ -3,11 +3,14 @@ class Personaje
   FBox robertoLaCaja;
   FBox robertoLaCajaTemp;
   Socket eleccion = null;
+  Socket sogaBloqueada = null;
+  FBody colisionCuerda = null;
 
   int posX;
   int posY;
   int alto;
   int ancho;
+  float rotacion;
   String estado = "quieto";
 
   PImage robertoCurrentImg = robertoImg;
@@ -19,8 +22,11 @@ class Personaje
     posY = _posY;
     alto = 64;
     ancho = 50;
+    rotacion = 0;
     robertoLaCaja = new FBox(ancho, alto);  // Dimensiones originalales: 25x32
     mundo.add(robertoLaCaja);
+    //robertoLaCaja.setGroupIndex(-1);
+    robertoLaCaja.setFill(120);
     robertoLaCaja.setName( "roberto" );
     robertoLaCaja.setStatic(true);
     robertoLaCaja.setSensor(true);
@@ -49,6 +55,7 @@ class Personaje
     if (estado != "cayendo")
     {
       robertoLaCaja.setPosition(posX, posY);
+      robertoLaCaja.setRotation(rotacion);
     } else if (estado == "cayendo")
     {
       posX = int(robertoLaCajaTemp.getX());
@@ -59,8 +66,11 @@ class Personaje
     imageMode(CENTER);
     noStroke();
     fill(255, 0, 0);
-    //pointLight(255, 255, 255, posX, posY, 0);
-    image(robertoCurrentImg, posX, posY);
+    pushMatrix();
+    translate(posX, posY);
+    rotate(rotacion);
+    image(robertoCurrentImg, 0, 0);
+    popMatrix();
     popStyle();
   }
 
@@ -72,22 +82,56 @@ class Personaje
       {
         estado = "colision";
         eleccion = null;
-      } else if ( posX > eleccion.posX )
-      {
-        --posX;
-        robertoCurrentImg = robertoImg2;
-      } else if ( posX < eleccion.posX )
-      {
-        ++posX;
-        robertoCurrentImg = robertoImg;
-      } else if ( posY > eleccion.posY )
-      {
-        --posY;
       } else
       {
-        estado = "quieto";
+        if (posY == height-(alto/2))
+        {
+          if ( posX > eleccion.posX )
+          {
+            --posX;
+            robertoCurrentImg = robertoImg2;
+          } else if ( posX < eleccion.posX )
+          {
+            ++posX;
+            robertoCurrentImg = robertoImg;
+          } else if ( posY > eleccion.posY )
+          {
+            --posY;
+          } else if ( posY < eleccion.posY )
+          {
+            ++posY;
+          } else if (posY == eleccion.posY && posX == eleccion.posX)
+          {
+            estado = "quieto";
+          }
+        }//
+        else {
+          FBody cuerdaEleccion = null;
+          float cuerdaDist = -1;
+
+          for (int i = 0; i < eleccion.miCuerda.cuerda.length; i++)
+          {
+            if (cuerdaDist == -1 || dist(posX, posY, eleccion.miCuerda.cuerda[i].getX(), eleccion.miCuerda.cuerda[i].getY()) < cuerdaDist)
+            {
+              cuerdaDist = dist(posX, posY, eleccion.miCuerda.cuerda[i].getX(), eleccion.miCuerda.cuerda[i].getY());
+              cuerdaEleccion = eleccion.miCuerda.cuerda[i];
+            }
+          }
+          posX = int(cuerdaEleccion.getX());
+          rotacion = cuerdaEleccion.getRotation();
+          if ( posY > eleccion.posY )
+          {
+            --posY;
+          } else if ( posY < eleccion.posY )
+          {
+            ++posY;
+          } else if (posY == eleccion.posY && posX == eleccion.posX)
+          {
+            estado = "quieto";
+          }
+        }
       }
-    } 
+    }
 
     if (magma.erupcionando == false && estado == "quieto" && eleccion != null &&eleccion.getSocketHeight() <= 6)
     {
@@ -98,6 +142,33 @@ class Personaje
       piedra.cayendo = true;
     }
 
+    if (estado.substring(0, min(estado.length(), 6)).equals("cuerda")) // AGARRARSE DE UNA CUERDA
+    { 
+      int tempPosX = int(estado.substring(6, 8));
+      int tempPosY = int(estado.substring(8, 10));
+
+      int angulo;
+      if (sogaBloqueada != maSockets[tempPosY][tempPosX])
+      {
+        if (posX > colisionCuerda.getX())
+        {
+          angulo = 180;
+        } else
+        {
+          angulo = 0;
+        }
+        float dx = 400 * cos( radians(angulo) );
+        float dy = 400 * sin( radians(angulo) );
+        colisionCuerda.setVelocity(dx, dy);
+
+        estado = "moviendose";
+        desactivarFisica();
+        eleccion = maSockets[tempPosY][tempPosX];
+        sogaBloqueada = eleccion;
+      } else {
+        estado = "cayendo";
+      }
+    } 
     if (estado != "cayendo")
     {
       if (estado == "quieto" && eleccion!=null && eleccion.getSocketHeight() == 0)  // WIN
@@ -127,14 +198,7 @@ class Personaje
       } else if ((eleccion != null && eleccion.estado != "soga") || estado == "colision") // SE CAE CON COLISION O AL PERDER LA CUERDA.
       {
         estado = "cayendo";
-        robertoLaCaja.setPosition(0, 0);
-
-        robertoLaCajaTemp = new FBox(ancho, alto);
-        mundo.add(robertoLaCajaTemp);
-        robertoLaCajaTemp.setName( "robertoTemp" );
-        robertoLaCajaTemp.setRestitution(0.4);
-        robertoLaCajaTemp.setDensity(1000);
-        robertoLaCajaTemp.setPosition(posX, posY);
+        activarFisica();
       } else if (estado == "quieto")  // PATHFINDING PARA ARRIBA Y COSTADOS
       {
         int orden = -1;
@@ -149,7 +213,32 @@ class Personaje
         }
         if (eleccionTemp != null)  // ARRIBA
         {
+
           estado = "moviendose";
+          if (eleccion.posX != eleccionTemp.posX)
+          {
+            sogaBloqueada = eleccion;
+            estado = "cayendo";
+            activarFisica();
+
+            //robertoLaCajaTemp.setGroupIndex(-1);
+            float velocidad = 400;
+            int angulo;
+            if (eleccion.posX > eleccionTemp.posX)
+            {
+              angulo = -125;
+            } else
+            {
+              angulo = -45;
+            }
+            float dx = velocidad * cos( radians(angulo) );
+            float dy = velocidad * sin( radians(angulo) );
+            robertoLaCajaTemp.setVelocity(dx, dy);
+          } else
+          {
+            sogaBloqueada = eleccionTemp;
+          }
+
           eleccion = eleccionTemp;
         } else  // PATHFINDING DE LOS COSTADOS
         {
@@ -161,20 +250,41 @@ class Personaje
               orden = maSockets[eleccion.getSocketHeight()][eleccion.getSocketWidth()+i].orden;
               eleccionTemp = maSockets[eleccion.getSocketHeight()][eleccion.getSocketWidth()+i];
             }
-            if (eleccionTemp != null)  // COSTADOS
+          }
+          if (eleccionTemp != null)  // COSTADOS
+          {
+            sogaBloqueada = eleccion;
+            estado = "cayendo";
+            activarFisica();
+
+            //robertoLaCajaTemp.setGroupIndex(-1);
+
+            float velocidad = 400;
+            int angulo;
+            if (eleccion.posX > eleccionTemp.posX)
             {
-              estado = "moviendose";
-              eleccion = eleccionTemp;
+              angulo = -125;
+            } else
+            {
+              angulo = -45;
             }
+            float dx = velocidad * cos( radians(angulo) );
+            float dy = velocidad * sin( radians(angulo) );
+
+            robertoLaCajaTemp.setVelocity(dx, dy);
+
+            eleccion = eleccionTemp;
           }
         }
       }
     } else if (estado == "cayendo" && posY >= height-(alto/2))
     {
       posY = height-(alto/2);
-      mundo.remove(robertoLaCajaTemp);
-      robertoLaCajaTemp = null;
       estado = "quieto";
+      desactivarFisica();
+    } else if (estado == "cayendo" && eleccion != null && robertoLaCajaTemp.getGroupIndex() == -1 && dist(posX, 0, eleccion.posX, 0) < 10)
+    {
+      robertoLaCajaTemp.setGroupIndex(1);
     }
 
     if ( posY == height-(alto/2) && robertoLaCaja.isSensor() )
@@ -184,5 +294,25 @@ class Personaje
     {
       robertoLaCaja.setSensor(true);
     }
+  }
+
+  void activarFisica()
+  {
+    mundo.remove(robertoLaCaja);
+
+    robertoLaCajaTemp = new FBox(ancho, alto);
+    //robertoLaCajaTemp.setSensor(true);
+    robertoLaCajaTemp.setName( "robertoTemp" );
+    robertoLaCajaTemp.setRestitution(0.4);
+    robertoLaCajaTemp.setPosition(posX, posY);
+    robertoLaCajaTemp.setRotation(rotacion);
+    mundo.add(robertoLaCajaTemp);
+  }
+
+  void desactivarFisica()
+  {
+    mundo.remove(robertoLaCajaTemp);
+    robertoLaCajaTemp = null;
+    mundo.add(robertoLaCaja);
   }
 }

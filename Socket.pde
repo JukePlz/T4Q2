@@ -6,6 +6,7 @@ class Socket //<>//
   int orden;
   String estado;
   color colr;
+  Cuerda miCuerda;
 
   Socket(int _posX, int _posY, String _estado)
   {
@@ -23,20 +24,23 @@ class Socket //<>//
       {
         ++cantActivos;
         estado = "soga";
+        miCuerda = new Cuerda(posX, posY, this);
         ++ordenSogas;
         orden = ordenSogas;
       } else if (estado == "soga")
       {
+
+        miCuerda.destroy();
+        miCuerda = null;
         --cantActivos;
         estado = "disponible";
       }
     }
 
-
     if (estado == "soga")
     {
       fill(255);
-      soga();
+      miCuerda.dibujar();
     } else
     {
       fill(0);
@@ -48,14 +52,6 @@ class Socket //<>//
       ellipse(posX, posY, grosor, grosor);
       popStyle();
     }
-  }
-
-  void soga()
-  {
-    pushStyle();
-    imageMode(CENTER);
-    image(soga, posX, posY + 50);
-    popStyle();
   }
 
   int getSocketHeight()

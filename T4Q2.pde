@@ -5,15 +5,18 @@ import fisica.*;
 
 // FISICA
 FWorld mundo;
-//FBox sombraIzq;
-//FBox sombraDer;
+FLine bordeIzq;
+FLine bordeDer;
 
 // OBJETOS
 Socket[][] maSockets;
 Lava magma;
 Piedra piedra;
 Personaje roberto;
+Cuerda cuerda;
 Contador contadorLights;
+Contador contadorCracksPared;
+Contador contadorCracksRocas;
 
 // OFFSETS MAPPING (SOMBRA NEGRA EN BORDES)
 int offset1;
@@ -35,24 +38,19 @@ boolean gameOver;
 
 // VARIABLES GRAFICOS
 PImage pared;
+PImage cracks;
 PImage lava;
-PImage soga;
+PImage sogaSegmento;
 PImage robertoImg;
 PImage robertoImg2;
 PImage darkness;
 PImage aura;
 PImage[] roca = new PImage[4];
+PImage[] magmaRoca = new PImage[4];
 
 void setup()
 {
-
-  if (lightSystem == 2)
-  {
-    size(1024, 768, P3D);  // Solamente usamos el render 3D cuando el sistema de iluminacion esta activado
-  } else
-  {
-    size(1024, 768);       // El render de JAVA2D va a ser reemplazado por FX2D, verificar que no se rompa nada cuando esto pase
-  }
+  size(1024, 768, P2D);  // Solamente usamos el render 3D cuando el sistema de iluminacion esta activado. El render de JAVA2D va a ser reemplazado por FX2D, verificar que no se rompa nada cuando esto pase
 
   surface.setTitle("Inicializando...");
 
@@ -60,13 +58,18 @@ void setup()
 
   lava = loadImage("data/lava.png");
   pared = loadImage("data/pared.png");
-  soga = loadImage("data/soga.png");
+  cracks = loadImage("data/cracks.png");
+  sogaSegmento = loadImage("data/sogaSegmento.png");
   robertoImg = loadImage("data/personaje/idle_01.png");
   robertoImg2 = loadImage("data/personaje/idle_02.png");
   roca[0] = loadImage("data/roca1.png");
   roca[1] = loadImage("data/roca2.png");
   roca[2] = loadImage("data/roca3.png");
   roca[3] = loadImage("data/roca4.png");
+  magmaRoca[0] = loadImage("data/magmaRoca1.png");
+  magmaRoca[1] = loadImage("data/magmaRoca2.png");
+  magmaRoca[2] = loadImage("data/magmaRoca3.png");
+  magmaRoca[3] = loadImage("data/magmaRoca4.png");
   aura = loadImage("data/luces/aura.png");
 
   configuracion();
@@ -77,12 +80,8 @@ void draw()
 {
   if (lightSystem == 2)
   {
-    //println(map(mouseX, 0, 1024, 0, 1), "mX: " + mouseX, mouseY);
-    //shininess(5.0); 
     pointLight(200+contadorLights.step(), 200, 200, roberto.posX, roberto.posY, 120+contadorLights.step());
   }
-  //ambientLight(100, 100, 100);
-  //ambient(51, 26, 0);
 
   if (frameCount % FPS/2 == 0) // Actualizamos el nombre de la ventana cada medio segundo (30 frames)
   {
@@ -93,7 +92,7 @@ void draw()
 
   mundo.step();
 
-  image(pared, 0, 0); // PARED
+  pared();
 
   for (int i = 0; i < maSockets.length; i++)
   {
@@ -104,7 +103,7 @@ void draw()
   }
 
   roberto.dibujar(); // PERSONAJE
-  piedra.dibujar(); // PIEDRAS
+  piedra.dibujar();  // PIEDRAS
 
   if (lightSystem == 1)
   {
@@ -115,8 +114,7 @@ void draw()
   }
 
   magma.dibujar(); // LAVA
-  //image(fondo, 0, 0); // OSCURIDAD  -- TODO: Reemplazar por mascara de vertex para mejor performance
-  bordes();
+  bordes();        // BORDES
 
   if (debugColision)
   {
@@ -124,8 +122,9 @@ void draw()
   }
 
   mouseApretado = false;
+  contadorCracksRocas.step();
 
-  if (gameOver)
+  if (gameOver)  // PANTALLA GAME OVER
   {
     fill(0, 200);
     rect(0, 0, width, height);
@@ -177,8 +176,25 @@ void contactStarted( FContact contact )
   FBody cuerpo1 = contact.getBody1();
   FBody cuerpo2 = contact.getBody2();
 
-  if ((cuerpo1.getName().substring(0, 4).equals("roca") && cuerpo2.getName() == "roberto") || (cuerpo1.getName() == "roberto" && cuerpo2.getName().substring(0, 4).equals("roca"))) 
+  if (cuerpo1.getName() == null || cuerpo2.getName() == null)
+  {
+    return;
+  }
+
+  if ((cuerpo1.getName().substring(0, min(cuerpo1.getName().length(), 4)).equals("roca") && cuerpo2.getName() == "roberto") || (cuerpo1.getName() == "roberto" && cuerpo2.getName().substring(0, min(cuerpo2.getName().length(), 4)).equals("roca"))) 
   {
     roberto.estado = "colision";
+  }
+
+  if (roberto.estado == "cayendo") {
+    if (cuerpo1.getName().substring(0, min(cuerpo1.getName().length(), 6)).equals("cuerda") && cuerpo2.getName() == "robertoTemp") 
+    {
+      roberto.estado = cuerpo1.getName();
+      roberto.colisionCuerda = cuerpo1;
+    } else if (cuerpo1.getName() == "robertoTemp" && cuerpo2.getName().substring(0, min(cuerpo2.getName().length(), 6)).equals("cuerda"))
+    {
+      roberto.estado = cuerpo2.getName();
+      roberto.colisionCuerda = cuerpo2;
+    }
   }
 }
