@@ -1,8 +1,9 @@
 # Scrap folder
 IGNORE/
 
-# Photoshop sources
+# Image editor sources
 *.psd
+*.pdn
 
 # Windows image file caches
 Thumbs.db
