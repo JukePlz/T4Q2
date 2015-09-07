@@ -19,7 +19,7 @@ class Personaje
     posY = _posY;
     alto = 64;
     ancho = 50;
-    robertoLaCaja = new FBox(ancho, alto);  //25 32
+    robertoLaCaja = new FBox(ancho, alto);  // Dimensiones originalales: 25x32
     mundo.add(robertoLaCaja);
     robertoLaCaja.setName( "roberto" );
     robertoLaCaja.setStatic(true);
@@ -129,7 +129,7 @@ class Personaje
         estado = "cayendo";
         robertoLaCaja.setPosition(0, 0);
 
-        robertoLaCajaTemp = new FBox(25, 32);
+        robertoLaCajaTemp = new FBox(ancho, alto);
         mundo.add(robertoLaCajaTemp);
         robertoLaCajaTemp.setName( "robertoTemp" );
         robertoLaCajaTemp.setRestitution(0.4);

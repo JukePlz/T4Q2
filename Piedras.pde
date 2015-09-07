@@ -21,8 +21,8 @@ class Piedra
       c.setPosition(random(305, 705), posY);
       c.setName( "roca" + int(random(0, 4)) );
       c.setVelocity(random(-500, 500), 0);
-      c.setFillColor(color(#c87e4d));
-      c.setNoStroke();
+      //c.setFillColor(color(#c87e4d));
+      //c.setNoStroke();
       c.setRestitution(0.4);
       c.setAngularVelocity(radians(int(random(-360, 360))));
       mundo.add(c);
@@ -36,10 +36,10 @@ class Piedra
         pushStyle();
         fill(color(#c87e4d));
         noStroke();
+        imageMode(CENTER);
 
         if (lightSystem == 1)
         {
-          imageMode(CENTER);
           blendMode(ADD);
           image(aura, objetoi.getX(), objetoi.getY());
           blendMode(BLEND);

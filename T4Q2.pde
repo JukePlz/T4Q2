@@ -15,6 +15,12 @@ Piedra piedra;
 Personaje roberto;
 Contador contadorLights;
 
+// OFFSETS MAPPING (SOMBRA NEGRA EN BORDES)
+int offset1;
+int offset2;
+int offset4;
+int offset3;
+
 // OTRAS VARIABLES
 int FPS;
 int cantActivos;
@@ -22,11 +28,12 @@ int maxActivos;
 int ordenSogas;
 int lightSystem;
 int lightIntensity;
+boolean mappingHelper;
+boolean debugColision;
 boolean mouseApretado;
 boolean gameOver;
 
 // VARIABLES GRAFICOS
-PImage fondo;  // TODO: TODO: Reemplazar por mascara de vertex para mejor performance
 PImage pared;
 PImage lava;
 PImage soga;
@@ -38,21 +45,21 @@ PImage[] roca = new PImage[4];
 
 void setup()
 {
+
   if (lightSystem == 2)
   {
     size(1024, 768, P3D);  // Solamente usamos el render 3D cuando el sistema de iluminacion esta activado
   } else
   {
+    size(1024, 768);       // El render de JAVA2D va a ser reemplazado por FX2D, verificar que no se rompa nada cuando esto pase
   }
 
   surface.setTitle("Inicializando...");
-
 
   Fisica.init(this);
 
   lava = loadImage("data/lava.png");
   pared = loadImage("data/pared.png");
-  fondo = loadImage("data/fondo.png");  // TODO: Reemplazar por mascara de vertex para mejor performance
   soga = loadImage("data/soga.png");
   robertoImg = loadImage("data/personaje/idle_01.png");
   robertoImg2 = loadImage("data/personaje/idle_02.png");
@@ -62,6 +69,7 @@ void setup()
   roca[3] = loadImage("data/roca4.png");
   aura = loadImage("data/luces/aura.png");
 
+  configuracion();
   inicializar();
 }
 
@@ -107,15 +115,21 @@ void draw()
   }
 
   magma.dibujar(); // LAVA
-  image(fondo, 0, 0); // OSCURIDAD  -- TODO: Reemplazar por mascara de vertex para mejor performance
+  //image(fondo, 0, 0); // OSCURIDAD  -- TODO: Reemplazar por mascara de vertex para mejor performance
+  bordes();
 
-  //mundo.draw(); // (SOLO PARA DEBUG) NO USAR! DIBUJA TODO ENCIMA DEL DRAW DE PROCESSING!!!
+  if (debugColision)
+  {
+    mundo.draw(); // (SOLO PARA DEBUG) NO USAR! DIBUJA TODO ENCIMA DEL DRAW DE PROCESSING!!!
+  }
 
   mouseApretado = false;
 
   if (gameOver)
   {
-    background(0);
+    fill(0, 200);
+    rect(0, 0, width, height);
+    //background(0, 150);
     fill(255);
     textSize(30);
     text("Game Over!", width/2, height/2);
@@ -131,6 +145,30 @@ void mousePressed()
   {
     inicializar();
     loop();
+  }
+}
+
+void mouseDragged()
+{
+  if (mappingHelper)  // Eso podria tener una mejor verificacion para el drag, utilizando estados
+  {
+    if ((dist(offset1, 0, mouseX, 0) < 40) && mouseY < height/2)
+    {
+      println("offset 1: " + mouseX);
+      offset1 = mouseX;
+    } else if ((dist(offset2, 0, mouseX, 0) < 40) && mouseY > height/2)
+    {
+      println("offset 2: " + mouseX);
+      offset2 = mouseX;
+    } else if ((dist(offset3, 0, mouseX, 0) < 40) && mouseY < height/2)
+    {
+      println("offset 3: " + mouseX);
+      offset3 = mouseX;
+    } else if ((dist(offset4, 0, mouseX, 0) < 40) && mouseY > height/2)
+    {
+      println("offset 4: " + mouseX);
+      offset4 = mouseX;
+    }
   }
 }
 

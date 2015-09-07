@@ -1,12 +1,8 @@
 void inicializar()
 {
-  lightSystem = 1;        // 0 = Sin iluminacion, 1 = Iluminacion 2D, 2 = Iluminacion 3D
-  lightIntensity = 1;     // 0 = Baja intensidad, 1 = Intensidad media, 2 = Intensidad alta  --  Solo iluminacion 2D
   mouseApretado = false;
   gameOver = false;
-  FPS = 60;
   cantActivos = 0;
-  maxActivos = 99;
   ordenSogas = 0;
 
   if (lightIntensity == 0)
