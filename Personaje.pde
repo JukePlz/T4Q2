@@ -10,11 +10,10 @@ class Personaje
   int posY;
   int alto;
   int ancho;
+  int sprite;
+  int spriteFrame;
   float rotacion;
   String estado = "quieto";
-
-  PImage robertoCurrentImg = robertoImg;
-
 
   Personaje(int _posX, int _posY)
   {
@@ -22,15 +21,17 @@ class Personaje
     posY = _posY;
     alto = 64;
     ancho = 50;
+    sprite = 0;
+    spriteFrame = 0;
     rotacion = 0;
     robertoLaCaja = new FBox(ancho, alto);  // Dimensiones originalales: 25x32
-    mundo.add(robertoLaCaja);
-    //robertoLaCaja.setGroupIndex(-1);
-    robertoLaCaja.setFill(120);
     robertoLaCaja.setName( "roberto" );
     robertoLaCaja.setStatic(true);
     robertoLaCaja.setSensor(true);
     robertoLaCaja.setRestitution(0.4);
+    robertoLaCaja.setFill(255, 0, 0);
+    //robertoLaCaja.setGroupIndex(-1);
+    mundo.add(robertoLaCaja);
 
     /*
     ArrayList<FBody> objetosMundo = mundo.getBodies();
@@ -52,6 +53,7 @@ class Personaje
   void dibujar()
   {
     think();
+
     if (estado != "cayendo")
     {
       robertoLaCaja.setPosition(posX, posY);
@@ -61,6 +63,7 @@ class Personaje
       posX = int(robertoLaCajaTemp.getX());
       posY = int(robertoLaCajaTemp.getY());
     }
+
     pushStyle();
     rectMode(CENTER);
     imageMode(CENTER);
@@ -69,7 +72,8 @@ class Personaje
     pushMatrix();
     translate(posX, posY);
     rotate(rotacion);
-    image(robertoCurrentImg, 0, 0);
+    image(robertoSprite[sprite][spriteFrame], 0, 0);
+    animateSprite();
     popMatrix();
     popStyle();
   }
@@ -82,6 +86,7 @@ class Personaje
       {
         estado = "colision";
         eleccion = null;
+        setSprite(IDLE);
       } else
       {
         if (posY == height-(alto/2))
@@ -89,23 +94,25 @@ class Personaje
           if ( posX > eleccion.posX )
           {
             --posX;
-            robertoCurrentImg = robertoImg2;
+            setSprite(WALK_LEFT);
           } else if ( posX < eleccion.posX )
           {
             ++posX;
-            robertoCurrentImg = robertoImg;
+            setSprite(WALK_RIGHT);
           } else if ( posY > eleccion.posY )
           {
             --posY;
+            setSprite(CLIMB);
           } else if ( posY < eleccion.posY )
           {
             ++posY;
+            setSprite(CLIMB);
           } else if (posY == eleccion.posY && posX == eleccion.posX)
           {
             estado = "quieto";
+            setSprite(IDLE_2);
           }
-        }//
-        else {
+        } else {
           FBody cuerdaEleccion = null;
           float cuerdaDist = -1;
 
@@ -119,15 +126,19 @@ class Personaje
           }
           posX = int(cuerdaEleccion.getX());
           rotacion = cuerdaEleccion.getRotation();
+
           if ( posY > eleccion.posY )
           {
             --posY;
+            setSprite(CLIMB);
           } else if ( posY < eleccion.posY )
           {
             ++posY;
+            setSprite(CLIMB);
           } else if (posY == eleccion.posY && posX == eleccion.posX)
           {
             estado = "quieto";
+            setSprite(IDLE_2);
           }
         }
       }
@@ -146,8 +157,8 @@ class Personaje
     { 
       int tempPosX = int(estado.substring(6, 8));
       int tempPosY = int(estado.substring(8, 10));
-
       int angulo;
+
       if (sogaBloqueada != maSockets[tempPosY][tempPosX])
       {
         if (posX > colisionCuerda.getX())
@@ -159,8 +170,8 @@ class Personaje
         }
         float dx = 400 * cos( radians(angulo) );
         float dy = 400 * sin( radians(angulo) );
-        colisionCuerda.setVelocity(dx, dy);
 
+        colisionCuerda.setVelocity(dx, dy);
         estado = "moviendose";
         desactivarFisica();
         eleccion = maSockets[tempPosY][tempPosX];
@@ -171,7 +182,7 @@ class Personaje
     } 
     if (estado != "cayendo")
     {
-      if (estado == "quieto" && eleccion!=null && eleccion.getSocketHeight() == 0)  // WIN
+      if (estado == "quieto" && eleccion!=null && eleccion.getSocketHeight() == 0)  // SUBIO A LA CIMA (PANTALLA GANAR)
       {
         gameOver = true;
       } else if (magma.alturaLava + 912 < posY)
@@ -181,6 +192,7 @@ class Personaje
       {
         int distancia = -1;
         Socket eleccionTemp = null;
+
         for (int i = 0; i < maSockets[0].length; i++)
         {
           if (maSockets[6][i].estado == "soga" && (distancia == -1 || distancia > dist(posX, 0, maSockets[6][i].posX, 0)))
@@ -199,9 +211,11 @@ class Personaje
       {
         estado = "cayendo";
         activarFisica();
+        setSprite(JUMP_LEFT);
       } else if (estado == "quieto")  // PATHFINDING PARA ARRIBA Y COSTADOS
       {
         int orden = -1;
+
         Socket eleccionTemp = null;
         for (int i = -1; i <= 1; i++)
         {
@@ -221,18 +235,22 @@ class Personaje
             estado = "cayendo";
             activarFisica();
 
-            //robertoLaCajaTemp.setGroupIndex(-1);
             float velocidad = 400;
             int angulo;
+
             if (eleccion.posX > eleccionTemp.posX)
             {
+              setSprite(JUMP_LEFT);
               angulo = -125;
             } else
             {
+              setSprite(JUMP_RIGHT);
               angulo = -45;
             }
+
             float dx = velocidad * cos( radians(angulo) );
             float dy = velocidad * sin( radians(angulo) );
+
             robertoLaCajaTemp.setVelocity(dx, dy);
           } else
           {
@@ -243,6 +261,7 @@ class Personaje
         } else  // PATHFINDING DE LOS COSTADOS
         {
           orden = eleccion.orden;
+
           for (int i = -1; i <= 1; i++)
           {
             if (i != 0 && maSockets[eleccion.getSocketHeight()][eleccion.getSocketWidth()+i].estado == "soga" && (orden < maSockets[eleccion.getSocketHeight()][eleccion.getSocketWidth()+i].orden ))
@@ -251,23 +270,26 @@ class Personaje
               eleccionTemp = maSockets[eleccion.getSocketHeight()][eleccion.getSocketWidth()+i];
             }
           }
+
           if (eleccionTemp != null)  // COSTADOS
           {
             sogaBloqueada = eleccion;
             estado = "cayendo";
             activarFisica();
 
-            //robertoLaCajaTemp.setGroupIndex(-1);
-
             float velocidad = 400;
             int angulo;
+
             if (eleccion.posX > eleccionTemp.posX)
             {
+              setSprite(JUMP_LEFT);
               angulo = -125;
             } else
             {
+              setSprite(JUMP_RIGHT);
               angulo = -45;
             }
+
             float dx = velocidad * cos( radians(angulo) );
             float dy = velocidad * sin( radians(angulo) );
 
@@ -280,7 +302,9 @@ class Personaje
     } else if (estado == "cayendo" && posY >= height-(alto/2))
     {
       posY = height-(alto/2);
+      rotacion = 0;
       estado = "quieto";
+      setSprite(IDLE);
       desactivarFisica();
     } else if (estado == "cayendo" && eleccion != null && robertoLaCajaTemp.getGroupIndex() == -1 && dist(posX, 0, eleccion.posX, 0) < 10)
     {
@@ -301,11 +325,12 @@ class Personaje
     mundo.remove(robertoLaCaja);
 
     robertoLaCajaTemp = new FBox(ancho, alto);
-    //robertoLaCajaTemp.setSensor(true);
-    robertoLaCajaTemp.setName( "robertoTemp" );
-    robertoLaCajaTemp.setRestitution(0.4);
     robertoLaCajaTemp.setPosition(posX, posY);
     robertoLaCajaTemp.setRotation(rotacion);
+    robertoLaCajaTemp.setName( "robertoTemp" );
+    robertoLaCajaTemp.setRestitution(0.4);
+    //robertoLaCajaTemp.setSensor(true);
+    //robertoLaCajaTemp.setGroupIndex(-1);
     mundo.add(robertoLaCajaTemp);
   }
 
@@ -314,5 +339,48 @@ class Personaje
     mundo.remove(robertoLaCajaTemp);
     robertoLaCajaTemp = null;
     mundo.add(robertoLaCaja);
+  }
+
+  void animateSprite()
+  {
+    int frameRateSprite = -1;
+
+    if (sprite == WALK_LEFT || sprite == WALK_RIGHT)
+    {
+      frameRateSprite = 8;
+    } else if (sprite == CLIMB)
+    {
+      frameRateSprite = 30;
+    } else if (sprite == JUMP_LEFT)
+    {
+      frameRateSprite = 20;
+    } else if (sprite == JUMP_RIGHT)
+    {
+      frameRateSprite = 20;
+    }
+
+    if (frameRateSprite != -1 && frameCount % frameRateSprite == 0)
+    {
+
+      if (spriteFrame == robertoSprite[sprite].length-1)
+      {
+        spriteFrame = 0;
+      } else if (robertoSprite[sprite][spriteFrame+1] == null)
+      {
+        spriteFrame = 0;
+      } else
+      {
+        ++spriteFrame;
+      }
+    }
+  }
+
+  void setSprite(int _spriteName)
+  {
+    if (sprite != _spriteName)
+    {
+      sprite = _spriteName;
+      spriteFrame = 0;
+    }
   }
 }

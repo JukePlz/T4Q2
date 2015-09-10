@@ -4,16 +4,21 @@ void inicializar()
   gameOver = false;
   cantActivos = 0;
   ordenSogas = 0;
+  textTimer = 0;
+  debugText = null;
 
-  if (lightIntensity == 0)
+  if (lightSystem == 1)
   {
-    darkness = loadImage("data/luces/lowLight.png");
-  } else if (lightIntensity == 1)
-  {
-    darkness = loadImage("data/luces/midLight.png");
-  } else if (lightIntensity == 2)
-  {
-    darkness = loadImage("data/luces/highLight.png");
+    if (lightIntensity == 1)
+    {
+      darkness = loadImage("data/luces/lowLight.png");
+    } else if (lightIntensity == 2)
+    {
+      darkness = loadImage("data/luces/midLight.png");
+    } else if (lightIntensity == 3)
+    {
+      darkness = loadImage("data/luces/highLight.png");
+    }
   }
 
   mundo = new FWorld();  // CREA EL MUNDO PARA LA LIBRERIA DE FISICA
@@ -40,7 +45,7 @@ void inicializar()
   bordeDer.setStroke(255);
   mundo.add(bordeIzq);
   mundo.add(bordeDer);
-  
+
   mundo.setGravity( 0, 1000 );
   mundo.setGrabbable(false);
 

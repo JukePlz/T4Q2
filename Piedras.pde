@@ -20,15 +20,19 @@ class Piedra
       FCircle c = new FCircle(radio);
       c.setPosition(random(305, 705), posY);
       c.setName( "roca" + int(random(0, 4)) );
+      c.setDensity(200);
       c.setVelocity(random(-500, 500), 0);
-      c.setRestitution(0.4);
+      c.setRestitution(1.5);
       c.setAngularVelocity(radians(int(random(-360, 360))));
       mundo.add(c);
     }
+
     ArrayList<FBody> objetosMundo = mundo.getBodies();
+
     for (int i = 0; i < objetosMundo.size(); i++)
     {
       FBody objetoi = objetosMundo.get(i);
+
       if (objetoi.getName() != null && objetoi.getName().substring(0, min(objetoi.getName().length(), 4)).equals("roca"))
       {
         pushStyle();

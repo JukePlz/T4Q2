@@ -31,27 +31,54 @@ int maxActivos;
 int ordenSogas;
 int lightSystem;
 int lightIntensity;
+int textTimer;
+boolean debugMode;
 boolean mappingHelper;
 boolean debugColision;
 boolean mouseApretado;
 boolean gameOver;
+String debugText;
 
 // VARIABLES GRAFICOS
 PImage pared;
 PImage cracks;
 PImage lava;
 PImage sogaSegmento;
-PImage robertoImg;
-PImage robertoImg2;
 PImage darkness;
 PImage aura;
 PImage[] roca = new PImage[4];
 PImage[] magmaRoca = new PImage[4];
+PImage[][] robertoSprite = new PImage[7][5];
+
+// CONSTANTES
+final int IDLE = 0;
+final int IDLE_2 = 1;
+final int WALK_LEFT = 2;
+final int WALK_RIGHT = 3;
+final int CLIMB = 4;
+final int JUMP_LEFT = 5;
+final int JUMP_RIGHT = 6;
+
+
+void settings()
+{
+  String renderType;
+
+  configuracion();
+
+  if (lightSystem == 2)
+  {
+    renderType = P3D;
+  } else
+  {
+    renderType = P2D;
+  }
+
+  size(1024, 768, renderType);  // Solamente usamos el render 3D cuando el sistema de iluminacion esta activado. El render de JAVA2D va a ser reemplazado por FX2D, verificar que no se rompa nada cuando esto pase
+}
 
 void setup()
 {
-  size(1024, 768, P2D);  // Solamente usamos el render 3D cuando el sistema de iluminacion esta activado. El render de JAVA2D va a ser reemplazado por FX2D, verificar que no se rompa nada cuando esto pase
-
   surface.setTitle("Inicializando...");
 
   Fisica.init(this);
@@ -60,8 +87,6 @@ void setup()
   pared = loadImage("data/pared.png");
   cracks = loadImage("data/cracks.png");
   sogaSegmento = loadImage("data/sogaSegmento.png");
-  robertoImg = loadImage("data/personaje/idle_01.png");
-  robertoImg2 = loadImage("data/personaje/idle_02.png");
   roca[0] = loadImage("data/roca1.png");
   roca[1] = loadImage("data/roca2.png");
   roca[2] = loadImage("data/roca3.png");
@@ -70,7 +95,36 @@ void setup()
   magmaRoca[1] = loadImage("data/magmaRoca2.png");
   magmaRoca[2] = loadImage("data/magmaRoca3.png");
   magmaRoca[3] = loadImage("data/magmaRoca4.png");
-  aura = loadImage("data/luces/aura.png");
+
+  if (lightSystem == 1)
+  {
+    aura = loadImage("data/luces/aura.png");
+  }
+
+  robertoSprite[0][0] = loadImage("data/personaje/idle/idle_front.png");
+  robertoSprite[1][0] = loadImage("data/personaje/idle/idle_back.png");
+
+  robertoSprite[2][0] = loadImage("data/personaje/walk/caminar_izquierda_01.png");
+  robertoSprite[2][1] = loadImage("data/personaje/walk/caminar_izquierda_02.png");
+  robertoSprite[2][2] = loadImage("data/personaje/walk/caminar_izquierda_03.png");
+  robertoSprite[2][3] = loadImage("data/personaje/walk/caminar_izquierda_04.png");
+  robertoSprite[2][4] = loadImage("data/personaje/walk/caminar_izquierda_05.png");
+
+  robertoSprite[3][0] = loadImage("data/personaje/walk/caminar_derecha_01.png");
+  robertoSprite[3][1] = loadImage("data/personaje/walk/caminar_derecha_02.png");
+  robertoSprite[3][2] = loadImage("data/personaje/walk/caminar_derecha_03.png");
+  robertoSprite[3][3] = loadImage("data/personaje/walk/caminar_derecha_04.png");
+  robertoSprite[3][4] = loadImage("data/personaje/walk/caminar_derecha_05.png");
+
+  robertoSprite[4][0] = loadImage("data/personaje/climb/escalando_01.png");
+  robertoSprite[4][1] = loadImage("data/personaje/climb/escalando_02.png");
+
+  robertoSprite[5][0] = loadImage("data/personaje/jump/saltando_izquierda_01.png");
+  robertoSprite[5][1] = loadImage("data/personaje/jump/saltando_izquierda_02.png");
+
+  robertoSprite[6][0] = loadImage("data/personaje/jump/saltando_derecha_01.png");
+  robertoSprite[6][1] = loadImage("data/personaje/jump/saltando_derecha_02.png");
+
 
   configuracion();
   inicializar();
@@ -89,8 +143,7 @@ void draw()
     surface.setTitle(int(frameRate) + " FPS" );  // La clase "frame" esta deprecada en processing 3.x por eso usamos "surface"
   }
 
-
-  mundo.step();
+  mundo.step();  // CALCULAR FISICA
 
   pared();
 
@@ -134,6 +187,17 @@ void draw()
     text("Game Over!", width/2, height/2);
     noLoop();
   }
+
+  if (debugText != null && textTimer > 0)  // TEXTO DE DEBUG EN PANTALLA
+  {
+    pushStyle();
+    fill(0, 220, 0);
+    stroke(3);
+    textSize(20);
+    text(debugText, 8, 21);
+    popStyle();
+  }
+  --textTimer;
 }
 
 void mousePressed()
@@ -144,6 +208,14 @@ void mousePressed()
   {
     inicializar();
     loop();
+  }
+}
+
+void keyPressed()
+{
+  if (debugMode)
+  {
+    debugMode();
   }
 }
 
