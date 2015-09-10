@@ -22,7 +22,7 @@ class Piedra
       c.setName( "roca" + int(random(0, 4)) );
       c.setDensity(200);
       c.setVelocity(random(-500, 500), 0);
-      c.setRestitution(1.5);
+      c.setRestitution(0.7);
       c.setAngularVelocity(radians(int(random(-360, 360))));
       mundo.add(c);
     }

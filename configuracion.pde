@@ -13,5 +13,5 @@ void configuracion()
   lightSystem = 1;        // 0 = Sin iluminacion, 1 = Iluminacion 2D, 2 = Iluminacion 3D
   lightIntensity = 2;     // 1 = Baja intensidad, 2 = Intensidad media, 3 = Intensidad alta  --  Solo iluminacion 2D
   FPS = 60;               // Frames por segundo de la aplicacion
-  maxActivos = 99;        // Maxima cantidad de sockets activables simultaneamente
+  maxActivos = 3;         // Maxima cantidad de sockets activables simultaneamente
 }

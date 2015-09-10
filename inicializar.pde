@@ -1,10 +1,11 @@
 void inicializar()
 {
+  imagesCached = false;
   mouseApretado = false;
-  gameOver = false;
   cantActivos = 0;
   ordenSogas = 0;
   textTimer = 0;
+  gameOver = 0;
   debugText = null;
 
   if (lightSystem == 1)

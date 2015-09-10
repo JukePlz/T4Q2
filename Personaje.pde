@@ -28,7 +28,7 @@ class Personaje
     robertoLaCaja.setName( "roberto" );
     robertoLaCaja.setStatic(true);
     robertoLaCaja.setSensor(true);
-    robertoLaCaja.setRestitution(0.4);
+    robertoLaCaja.setRestitution(2);
     robertoLaCaja.setFill(255, 0, 0);
     //robertoLaCaja.setGroupIndex(-1);
     mundo.add(robertoLaCaja);
@@ -184,10 +184,10 @@ class Personaje
     {
       if (estado == "quieto" && eleccion!=null && eleccion.getSocketHeight() == 0)  // SUBIO A LA CIMA (PANTALLA GANAR)
       {
-        gameOver = true;
+        gameOver = 2;
       } else if (magma.alturaLava + 912 < posY)
       {
-        gameOver = true;
+        gameOver = 1;
       } else if (posY == height-(alto/2))  // CAMINA HACIA LA PRIMERA CUERDA DESDE EL PISO.
       {
         int distancia = -1;
