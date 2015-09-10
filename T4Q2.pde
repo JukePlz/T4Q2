@@ -1,4 +1,4 @@
-// Processing 3.0b5 + Fisica //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
+// Processing 3.0b5 + Fisica
 
 // IMPORTS
 import fisica.*;
