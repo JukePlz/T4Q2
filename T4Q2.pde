@@ -261,7 +261,10 @@ void draw()
 
 void mousePressed()
 {
-  mouseApretado = true;
+  if (!mappingHelper)
+  {
+    mouseApretado = true;
+  }
 }
 
 void keyPressed()
@@ -276,6 +279,22 @@ void mouseDragged()
 {
   if (mappingHelper)  // Eso podria tener una mejor verificacion para el drag, utilizando estados
   {
+    int distanciaMaxX = (width/(maSockets[0].length -1)/4);
+    int distanciaMaxY = (height/(maSockets.length -1)/4);
+
+    for (int i = 0; i < maSockets.length; i++)
+    {
+      for (int a = 0; a < maSockets[0].length; a++)
+      {
+        if (dist(maSockets[i][a].posX, maSockets[i][a].posY, mouseX, mouseY) < 10)
+        {
+          maSockets[i][a].posX = max(min(mouseX, width/(maSockets[0].length -1) * a +56 + distanciaMaxX), width/(maSockets[0].length -1) * a +56 - distanciaMaxX);
+          maSockets[i][a].posY = max(min(mouseY, height/(maSockets.length -1) * i +16 + distanciaMaxY), height/(maSockets.length -1) * i +16 - distanciaMaxY);
+        }
+      }
+    }
+
+
     if ((dist(offset1, 0, mouseX, 0) < 40) && mouseY < height/2)
     {
       println("offset 1: " + mouseX);

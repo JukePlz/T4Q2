@@ -56,11 +56,11 @@ class Socket //<>//
 
   int getSocketHeight()
   {
-    return (posY - 16) / ( height/(maSockets.length-1));
+    return round(float(posY - 16) / ( float(height)/float(maSockets.length-1)));
   }
 
   int getSocketWidth()
   {
-    return (posX - 56) / ( width/(maSockets[0].length-1));
+    return round(float(posX - 56) / ( float(width)/float(maSockets[0].length-1)));
   }
 }
