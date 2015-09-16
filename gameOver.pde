@@ -1,61 +1,42 @@
-int fadeTime = 0;
-int textHeight = -50;
+int timer;
+int timer2;
 
 void gameOver(int state)
 {
-  pushStyle();
-  textFont(splatter, 32);
+  vida = 0;
 
+  pushStyle();
   if (state == 1)
   {
-    if (fadeTime <= 199)
+    if (frameCount % 20 == 0)
     {
-      ++fadeTime;
-    }
-    fill(0, fadeTime);
-    rect(0, 0, width, height);
-
-    if (fadeTime >= 200);
-    {
-      textSize(72);
-      fill(255, 140, 0);
-
-      if (textHeight > height/2)
+      ++timer;
+      if (timer > 6)
       {
-        textHeight = height/2;
-        delay(1000);
+        delay(2000);
         inicializar();
         imagesCached = true;
-        fadeTime = 0;
-        textHeight = -50;
       }
-      text("PERDISTE", width/2 - 115, ++textHeight);
     }
+    image(perdiste[timer], 0, 0);
   } else if (state == 2)
   {
-    if (fadeTime <= 199)
+    if (frameCount % 15 == 0)
     {
-      ++fadeTime;
-    }
-    fill(0, fadeTime);
-    rect(0, 0, width, height);
-
-    if (fadeTime >= 200);
-    {
-      textSize(72);
-      fill(255, 140, 0);
-
-      if (textHeight > height/2)
+      ++timer;
+      if (timer2 > 2)
       {
-        textHeight = height/2;
-        delay(1000);
+        delay(2000);
         inicializar();
         imagesCached = true;
-        fadeTime = 0;
-        textHeight = -50;
       }
-      text("GANASTE", width/2 - 115, ++textHeight);
+      if (timer > 6)
+      {
+        timer = 3;
+        ++timer2;
+      }
     }
+    image(ganaste[timer], 0, 0);
   }
   popStyle();
 }

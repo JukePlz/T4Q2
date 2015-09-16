@@ -6,6 +6,9 @@ void inicializar()
   ordenSogas = 0;
   textTimer = 0;
   gameOver = 0;
+  vida = 3;
+  timer = 0;
+  timer2 = 0;
   debugText = null;
 
   if (lightSystem == 1)

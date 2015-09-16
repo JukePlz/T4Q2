@@ -3,7 +3,7 @@ boolean imagesCached()
   boolean check = true;
 
   // LA IMAGEN TODAVIA ESTA CARGANDO
-  if (lava.width == 0 || pared.width == 0 || cracks.width == 0 || sogaSegmento.width == 0)
+  if (lava.width == 0 || pared.width == 0 || cracks.width == 0 || sogaSegmento.width == 0 || casco.width == 0)
   {
     check = false;
   }
@@ -35,8 +35,24 @@ boolean imagesCached()
     }
   }
 
+  for (int i = 0; i < ganaste.length; i++)
+  {
+    if (ganaste[i].width == 0)
+    {
+      check = false;
+    }
+  }
+
+  for (int i = 0; i < perdiste.length; i++)
+  {
+    if (perdiste[i].width == 0)
+    {
+      check = false;
+    }
+  }
+
   // ERROR AL CARGAR IMAGENES
-  if (lava.width == -1 || pared.width == -1 || cracks.width == -1 || sogaSegmento.width == -1)
+  if (lava.width == -1 || pared.width == -1 || cracks.width == -1 || sogaSegmento.width == -1 || casco.width == -1)
   {
     println("ERROR EN CARGA DE RECURSOS: SPRITES PARED/LAVA/CRACKS/CUERDA.");
     exit();
@@ -69,6 +85,22 @@ boolean imagesCached()
         println("ERROR EN CARGA DE RECURSOS: SPRITES ROBERTO. Indice [" + i + "][" + a + "]");
         exit();
       }
+    }
+  }
+
+  for (int i = 0; i < ganaste.length; i++)
+  {
+    if (ganaste[i].width == -1)
+    {
+      check = false;
+    }
+  }
+
+  for (int i = 0; i < perdiste.length; i++)
+  {
+    if (perdiste[i].width == -1)
+    {
+      check = false;
     }
   }
 

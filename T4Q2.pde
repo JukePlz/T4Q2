@@ -18,9 +18,6 @@ Contador contadorLights;
 Contador contadorCracksPared;
 Contador contadorCracksRocas;
 
-// FONTS
-PFont splatter;
-
 // OFFSETS MAPPING (SOMBRA NEGRA EN BORDES)
 int offset1;
 int offset2;
@@ -31,17 +28,21 @@ int offset3;
 int FPS;
 int cantActivos;
 int maxActivos;
+int diametroSocket;
 int ordenSogas;
 int lightSystem;
 int lightIntensity;
 int textTimer;
 int gameOver;
+int vida;
+int keyCodeOffset;
 boolean imagesCached;
 boolean debugMode;
 boolean mappingHelper;
 boolean debugColision;
 boolean mouseApretado;
 String debugText;
+String renderType;
 
 // VARIABLES GRAFICOS
 PImage pared;
@@ -50,6 +51,9 @@ PImage lava;
 PImage sogaSegmento;
 PImage darkness;
 PImage aura;
+PImage casco;
+PImage[] perdiste = new PImage[7];
+PImage[] ganaste = new PImage[7];
 PImage[] roca = new PImage[4];
 PImage[] magmaRoca = new PImage[4];
 PImage[][] robertoSprite = new PImage[7][5];
@@ -66,8 +70,6 @@ final int JUMP_RIGHT = 6;
 
 void settings()
 {
-  String renderType;
-
   configuracion();
 
   if (lightSystem == 2)
@@ -91,6 +93,21 @@ void setup()
   pared = requestImage("data/pared.png");
   cracks = requestImage("data/cracks.png");
   sogaSegmento = requestImage("data/sogaSegmento.png");
+  casco = requestImage("data/casco.png");
+  perdiste[0] = requestImage("data/gameover/pantalla1.png");
+  perdiste[1] = requestImage("data/gameover/pantalla2.png");
+  perdiste[2] = requestImage("data/gameover/pantalla3.png");
+  perdiste[3] = requestImage("data/gameover/pantalla4.png");
+  perdiste[4] = requestImage("data/gameover/pantalla5.png");
+  perdiste[5] = requestImage("data/gameover/pantalla6.png");
+  perdiste[6] = requestImage("data/gameover/pantalla7.png");
+  ganaste[0] = requestImage("data/ganaste/pantalla1.png");
+  ganaste[1] = requestImage("data/ganaste/pantalla2.png");
+  ganaste[2] = requestImage("data/ganaste/pantalla3.png");
+  ganaste[3] = requestImage("data/ganaste/pantalla4.png");
+  ganaste[4] = requestImage("data/ganaste/pantalla5.png");
+  ganaste[5] = requestImage("data/ganaste/pantalla6.png");
+  ganaste[6] = requestImage("data/ganaste/pantalla7.png");
   roca[0] = requestImage("data/roca1.png");
   roca[1] = requestImage("data/roca2.png");
   roca[2] = requestImage("data/roca3.png");
@@ -129,8 +146,6 @@ void setup()
   robertoSprite[6][0] = requestImage("data/personaje/jump/saltando_derecha_01.png");
   robertoSprite[6][1] = requestImage("data/personaje/jump/saltando_derecha_02.png");
 
-  splatter = loadFont("SPLATTER-48.vlw");
-
   configuracion();
   inicializar();
 }
@@ -151,9 +166,14 @@ void draw()
       surface.setTitle(int(frameRate) + " FPS" );  // La clase "frame" esta deprecada en processing 3.x por eso usamos "surface"
     }
 
+    if ( vida < 1)
+    {
+      gameOver = 1;
+    }
+
     mundo.step();  // CALCULAR FISICA
 
-    pared();
+    pared();       // PARED FONDO
 
     for (int i = 0; i < maSockets.length; i++)
     {
@@ -163,7 +183,10 @@ void draw()
       }
     }
 
-    roberto.dibujar(); // PERSONAJE
+    if (gameOver == 0)
+    {
+      roberto.dibujar(); // PERSONAJE
+    }
     piedra.dibujar();  // PIEDRAS
 
     if (lightSystem == 1)
@@ -175,6 +198,7 @@ void draw()
     }
 
     magma.dibujar(); // LAVA
+    hud();           // VIDA
     bordes();        // BORDES
 
     if (debugColision)
@@ -285,9 +309,25 @@ void contactStarted( FContact contact )
   if ((cuerpo1.getName().substring(0, min(cuerpo1.getName().length(), 4)).equals("roca") && cuerpo2.getName() == "roberto") || (cuerpo1.getName() == "roberto" && cuerpo2.getName().substring(0, min(cuerpo2.getName().length(), 4)).equals("roca"))) 
   {
     roberto.estado = "colision";
+
+    if (roberto.invulnerable == false)
+    {
+      --vida;
+      roberto.invulnerable = true;
+    }
   }
 
-  if (roberto.estado == "cayendo") {
+  if ((cuerpo1.getName().substring(0, min(cuerpo1.getName().length(), 4)).equals("roca") && cuerpo2.getName() == "robertoTemp") || (cuerpo1.getName() == "robertoTemp" && cuerpo2.getName().substring(0, min(cuerpo2.getName().length(), 4)).equals("roca"))) 
+  {
+    if (roberto.invulnerable == false)
+    {
+      --vida;
+      roberto.invulnerable = true;
+    }
+  }
+
+  if (roberto.estado == "cayendo")
+  {
     if (cuerpo1.getName().substring(0, min(cuerpo1.getName().length(), 6)).equals("cuerda") && cuerpo2.getName() == "robertoTemp") 
     {
       roberto.estado = cuerpo1.getName();

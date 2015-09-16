@@ -13,6 +13,7 @@ class Personaje
   int sprite;
   int spriteFrame;
   float rotacion;
+  boolean invulnerable;
   String estado = "quieto";
 
   Personaje(int _posX, int _posY)
@@ -24,6 +25,7 @@ class Personaje
     sprite = 0;
     spriteFrame = 0;
     rotacion = 0;
+    invulnerable = false;
     robertoLaCaja = new FBox(ancho, alto);  // Dimensiones originalales: 25x32
     robertoLaCaja.setName( "roberto" );
     robertoLaCaja.setStatic(true);
@@ -111,21 +113,29 @@ class Personaje
           {
             estado = "quieto";
             setSprite(IDLE_2);
+            rotacion = 0;
           }
         } else {
           FBody cuerdaEleccion = null;
           float cuerdaDist = -1;
+          float rotacionAverage = 0;
 
           for (int i = 0; i < eleccion.miCuerda.cuerda.length; i++)
           {
+            if (i != eleccion.miCuerda.cuerda.length-1) {
+              rotacionAverage = rotacionAverage + eleccion.miCuerda.cuerda[i].getRotation();
+            } else
+            {
+            }
+
             if (cuerdaDist == -1 || dist(posX, posY, eleccion.miCuerda.cuerda[i].getX(), eleccion.miCuerda.cuerda[i].getY()) < cuerdaDist)
             {
               cuerdaDist = dist(posX, posY, eleccion.miCuerda.cuerda[i].getX(), eleccion.miCuerda.cuerda[i].getY());
               cuerdaEleccion = eleccion.miCuerda.cuerda[i];
             }
           }
+          rotacion = (rotacionAverage / float(eleccion.miCuerda.cuerda.length-1));
           posX = int(cuerdaEleccion.getX());
-          rotacion = cuerdaEleccion.getRotation();
 
           if ( posY > eleccion.posY )
           {
@@ -139,6 +149,7 @@ class Personaje
           {
             estado = "quieto";
             setSprite(IDLE_2);
+            rotacion = 0;
           }
         }
       }
@@ -336,6 +347,11 @@ class Personaje
 
   void desactivarFisica()
   {
+    if (invulnerable)
+    {
+      invulnerable = false;
+    }
+
     mundo.remove(robertoLaCajaTemp);
     robertoLaCajaTemp = null;
     mundo.add(robertoLaCaja);

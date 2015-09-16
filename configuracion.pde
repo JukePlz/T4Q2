@@ -14,4 +14,5 @@ void configuracion()
   lightIntensity = 2;     // 1 = Baja intensidad, 2 = Intensidad media, 3 = Intensidad alta  --  Solo iluminacion 2D
   FPS = 60;               // Frames por segundo de la aplicacion
   maxActivos = 3;         // Maxima cantidad de sockets activables simultaneamente
+  diametroSocket = 35;    // Diametro de los ahujeros
 }

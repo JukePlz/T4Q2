@@ -13,7 +13,7 @@ class Socket //<>//
     posX = _posX;
     posY = _posY;
     estado = _estado;
-    grosor = 35;
+    grosor = diametroSocket;
   }
 
   void dibujar()
