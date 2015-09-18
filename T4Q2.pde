@@ -1,4 +1,5 @@
-// Processing 3.0b5 + Fisica
+// Processing 2.2 + Fisica
+// Requiere kinectCap en ejecucion
 
 // IMPORTS
 import fisica.*;
@@ -10,6 +11,7 @@ FLine bordeDer;
 
 // OBJETOS
 Socket[][] maSockets;
+Socket socketDrag;
 Lava magma;
 Piedra piedra;
 Personaje roberto;
@@ -40,6 +42,7 @@ boolean imagesCached;
 boolean debugMode;
 boolean mappingHelper;
 boolean debugColision;
+boolean debugCamera;
 boolean mouseApretado;
 String debugText;
 String renderType;
@@ -58,6 +61,9 @@ PImage[] roca = new PImage[4];
 PImage[] magmaRoca = new PImage[4];
 PImage[][] robertoSprite = new PImage[7][5];
 
+PImage capturaKinect = createImage(0, 0, RGB);
+PImage capturaKinectTemp = createImage(0, 0, RGB);
+
 // CONSTANTES
 final int IDLE = 0;
 final int IDLE_2 = 1;
@@ -67,8 +73,7 @@ final int CLIMB = 4;
 final int JUMP_LEFT = 5;
 final int JUMP_RIGHT = 6;
 
-
-void settings()
+void setup()
 {
   configuracion();
 
@@ -80,12 +85,9 @@ void settings()
     renderType = P2D;
   }
 
-  size(1024, 768, renderType);  // Solamente usamos el render 3D cuando el sistema de iluminacion esta activado. El render de JAVA2D va a ser reemplazado por FX2D, verificar que no se rompa nada cuando esto pase
-}
+  size(1024, 768, renderType);  // Solamente usamos el render 3D cuando el sistema de iluminacion esta activado. El render de JAVA2D va a ser reemplazado por FX2D, verificar que no se rompa nada cuando esto pase.
 
-void setup()
-{
-  surface.setTitle("Inicializando...");
+  frame.setTitle("Inicializando...");
 
   Fisica.init(this);
 
@@ -148,6 +150,8 @@ void setup()
 
   configuracion();
   inicializar();
+
+  text("", 0, 0); // PRECACHE DE LA FUNCION
 }
 
 void draw()
@@ -163,7 +167,7 @@ void draw()
     if (frameCount % FPS/2 == 0) // Actualizamos el nombre de la ventana cada medio segundo (30 frames)
     {
       // FPS en marco de ventana
-      surface.setTitle(int(frameRate) + " FPS" );  // La clase "frame" esta deprecada en processing 3.x por eso usamos "surface"
+      frame.setTitle(int(frameRate) + " FPS" );  // La clase "frame" esta deprecada en processing 3.x por eso usamos "surface"
     }
 
     if ( vida < 1)
@@ -171,15 +175,56 @@ void draw()
       gameOver = 1;
     }
 
+    if (frameCount%5 == 0)
+    {
+      File screenCap = new File("C:/screenCap.jpg");
+      if (screenCap.exists())
+      {
+        capturaKinectTemp =  requestImage("C:/screenCap.jpg");
+      }
+    }
+    if (capturaKinectTemp.width > 0)
+    {
+      capturaKinect = capturaKinectTemp;
+      capturaKinectTemp = createImage(0, 0, RGB);
+      File screenCap = new File("C:/screenCap.jpg");
+      if (screenCap.exists())
+      {
+        screenCap.delete();
+      }
+    }
+
     mundo.step();  // CALCULAR FISICA
 
     pared();       // PARED FONDO
+
+    if (socketDrag != null)
+    {
+
+      if (!debugCamera)
+      {
+        int distanciaMaxX = (width/(maSockets[0].length -1)/4);
+        int distanciaMaxY = (height/(maSockets.length -1)/4);
+        socketDrag.posX = max(min(mouseX, width/(maSockets[0].length -1) * socketDrag.getSocketWidth() +56 + distanciaMaxX), width/(maSockets[0].length -1) * socketDrag.getSocketWidth() +56 - distanciaMaxX);
+        socketDrag.posY = max(min(mouseY, height/(maSockets.length -1) * socketDrag.getSocketHeight() +16 + distanciaMaxY), height/(maSockets.length -1) * socketDrag.getSocketHeight() +16 - distanciaMaxY);
+      } else
+      {
+        int distanciaMaxX = (width/(maSockets[0].length -1)/2);
+        int distanciaMaxY = (height/(maSockets.length -1)/2);
+        socketDrag.posXDeteccion = int((max(min(mouseX, width/(maSockets[0].length -1) * socketDrag.getSocketWidth() +56 + distanciaMaxX), width/(maSockets[0].length -1) * socketDrag.getSocketWidth() +56 - distanciaMaxX))/1.6);
+        socketDrag.posYDeteccion = int((max(min(mouseY, height/(maSockets.length -1) * socketDrag.getSocketHeight() +16 + distanciaMaxY), height/(maSockets.length -1) * socketDrag.getSocketHeight() +16 - distanciaMaxY))/1.6);
+      }
+    }
+
 
     for (int i = 0; i < maSockets.length; i++)
     {
       for (int a = 0; a < maSockets[0].length; a++)
       {
-        maSockets[i][a].dibujar();  // SOCKETS
+        if (!debugCamera && maSockets[i][a].estado == "soga" && gameOver == 0)
+        {
+          maSockets[i][a].miCuerda.dibujar();  // CUERDA
+        }
       }
     }
 
@@ -187,6 +232,7 @@ void draw()
     {
       roberto.dibujar(); // PERSONAJE
     }
+
     piedra.dibujar();  // PIEDRAS
 
     if (lightSystem == 1)
@@ -198,21 +244,38 @@ void draw()
     }
 
     magma.dibujar(); // LAVA
-    hud();           // VIDA
-    bordes();        // BORDES
 
     if (debugColision)
     {
       mundo.draw(); // (SOLO PARA DEBUG) NO USAR! DIBUJA TODO ENCIMA DEL DRAW DE PROCESSING!!!
     }
 
-    mouseApretado = false;
-    contadorCracksRocas.step();
-
     if (gameOver != 0)  // PANTALLA GAME OVER
     {
       gameOver(gameOver);
     }
+
+    hud();           // VIDA
+    bordes();        // BORDES
+
+    if (debugCamera)
+    {
+      if (capturaKinect.width > 0)
+      {
+        image(capturaKinect, 0, 0, width, height);
+      }
+    }
+
+    for (int i = 0; i < maSockets.length; i++)
+    {
+      for (int a = 0; a < maSockets[0].length; a++)
+      {
+        maSockets[i][a].dibujar();  // SOCKETS
+      }
+    }
+
+    mouseApretado = false;
+    contadorCracksRocas.step();
 
     if (debugText != null && textTimer > 0)  // TEXTO DE DEBUG EN PANTALLA
     {
@@ -259,11 +322,47 @@ void draw()
   }
 }
 
+void mouseReleased()
+{
+  if (socketDrag != null)
+  {
+    socketDrag = null;
+  }
+}
+
 void mousePressed()
 {
   if (!mappingHelper)
   {
     mouseApretado = true;
+  }
+
+  if (mouseButton == LEFT && mappingHelper)
+  {
+    if (socketDrag == null)
+    {
+      for (int i = 0; i < maSockets.length; i++)
+      {
+        for (int a = 0; a < maSockets[0].length; a++)
+        {
+          if (!debugCamera)
+          {
+            if (dist(maSockets[i][a].posX, maSockets[i][a].posY, mouseX, mouseY) < maSockets[i][a].grosor)
+            {
+              socketDrag = maSockets[i][a];
+              break;
+            }
+          } else
+          {
+            if (dist(int((maSockets[i][a].posXDeteccion)*1.6), int((maSockets[i][a].posYDeteccion)*1.6), mouseX, mouseY) < maSockets[i][a].grosor - 5)
+            {
+              socketDrag = maSockets[i][a];
+              break;
+            }
+          }
+        }
+      }
+    }
   }
 }
 
@@ -279,38 +378,25 @@ void mouseDragged()
 {
   if (mappingHelper)  // Eso podria tener una mejor verificacion para el drag, utilizando estados
   {
-    int distanciaMaxX = (width/(maSockets[0].length -1)/4);
-    int distanciaMaxY = (height/(maSockets.length -1)/4);
-
-    for (int i = 0; i < maSockets.length; i++)
+    if (mouseButton == RIGHT)
     {
-      for (int a = 0; a < maSockets[0].length; a++)
+      if ((dist(offset1, 0, mouseX, 0) < 40) && mouseY < height/2)
       {
-        if (dist(maSockets[i][a].posX, maSockets[i][a].posY, mouseX, mouseY) < 10)
-        {
-          maSockets[i][a].posX = max(min(mouseX, width/(maSockets[0].length -1) * a +56 + distanciaMaxX), width/(maSockets[0].length -1) * a +56 - distanciaMaxX);
-          maSockets[i][a].posY = max(min(mouseY, height/(maSockets.length -1) * i +16 + distanciaMaxY), height/(maSockets.length -1) * i +16 - distanciaMaxY);
-        }
+        println("offset 1: " + mouseX);
+        offset1 = mouseX;
+      } else if ((dist(offset2, 0, mouseX, 0) < 40) && mouseY > height/2)
+      {
+        println("offset 2: " + mouseX);
+        offset2 = mouseX;
+      } else if ((dist(offset3, 0, mouseX, 0) < 40) && mouseY < height/2)
+      {
+        println("offset 3: " + mouseX);
+        offset3 = mouseX;
+      } else if ((dist(offset4, 0, mouseX, 0) < 40) && mouseY > height/2)
+      {
+        println("offset 4: " + mouseX);
+        offset4 = mouseX;
       }
-    }
-
-
-    if ((dist(offset1, 0, mouseX, 0) < 40) && mouseY < height/2)
-    {
-      println("offset 1: " + mouseX);
-      offset1 = mouseX;
-    } else if ((dist(offset2, 0, mouseX, 0) < 40) && mouseY > height/2)
-    {
-      println("offset 2: " + mouseX);
-      offset2 = mouseX;
-    } else if ((dist(offset3, 0, mouseX, 0) < 40) && mouseY < height/2)
-    {
-      println("offset 3: " + mouseX);
-      offset3 = mouseX;
-    } else if ((dist(offset4, 0, mouseX, 0) < 40) && mouseY > height/2)
-    {
-      println("offset 4: " + mouseX);
-      offset4 = mouseX;
     }
   }
 }
@@ -329,19 +415,21 @@ void contactStarted( FContact contact )
   {
     roberto.estado = "colision";
 
-    if (roberto.invulnerable == false)
+    if (roberto.invulnerable == false && roberto.timerInvul == 0)
     {
       --vida;
       roberto.invulnerable = true;
+      roberto.timerInvul = 120;
     }
   }
 
   if ((cuerpo1.getName().substring(0, min(cuerpo1.getName().length(), 4)).equals("roca") && cuerpo2.getName() == "robertoTemp") || (cuerpo1.getName() == "robertoTemp" && cuerpo2.getName().substring(0, min(cuerpo2.getName().length(), 4)).equals("roca"))) 
   {
-    if (roberto.invulnerable == false)
+    if (roberto.invulnerable == false && roberto.timerInvul == 0)
     {
       --vida;
       roberto.invulnerable = true;
+      roberto.timerInvul = 120;
     }
   }
 
@@ -358,3 +446,4 @@ void contactStarted( FContact contact )
     }
   }
 }
+

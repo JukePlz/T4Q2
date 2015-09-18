@@ -1,8 +1,10 @@
-class Socket //<>//
+class Socket
 {
   int grosor;
   int posX;
   int posY;
+  int posXDeteccion;
+  int posYDeteccion;
   int orden;
   String estado;
   color colr;
@@ -14,45 +16,112 @@ class Socket //<>//
     posY = _posY;
     estado = _estado;
     grosor = diametroSocket;
+    posXDeteccion = round(posX/1.6);
+    posYDeteccion = round(posY/1.6);
   }
 
   void dibujar()
   {
-    if (dist(mouseX, mouseY, posX, posY) < grosor/2 && mouseApretado)
+    if (!debugMode || debugCamera)
     {
-      if (estado == "disponible"  && (cantActivos < maxActivos))
+      if (estado == "soga" || estado == "disponible")
       {
-        ++cantActivos;
-        estado = "soga";
-        miCuerda = new Cuerda(posX, posY, this);
-        ++ordenSogas;
-        orden = ordenSogas;
-      } else if (estado == "soga")
-      {
+        int grosorDeteccion = grosor - 5;
+        PImage socketArea = capturaKinect.get( posXDeteccion-round(grosorDeteccion/3.2), posYDeteccion-round(grosorDeteccion/3.2), round(grosorDeteccion/1.6), round(grosorDeteccion/1.6));
 
-        miCuerda.destroy();
-        miCuerda = null;
-        --cantActivos;
-        estado = "disponible";
+        int redAvg = 0;
+        int greenAvg = 0;
+        int blueAvg = 0;
+
+        for (int i = 0; i < socketArea.pixels.length; i++)
+        {
+          redAvg += red(socketArea.pixels[i]);
+          greenAvg += green(socketArea.pixels[i]);
+          blueAvg += blue(socketArea.pixels[i]);
+        }
+
+        redAvg = (redAvg/socketArea.pixels.length);
+        greenAvg = (greenAvg/socketArea.pixels.length);
+        blueAvg = (blueAvg/socketArea.pixels.length);
+
+        if (redAvg > 100)
+        {
+          // println(redAvg, greenAvg, blueAvg);
+        }
+
+
+        if (debugCamera)
+        {
+          pushStyle();
+          fill(redAvg, greenAvg, blueAvg);
+          rectMode(CENTER);
+          rect(round(posXDeteccion*1.6), round(posYDeteccion*1.6), int(grosorDeteccion), int(grosorDeteccion));
+          popStyle();
+        }
+
+        if (estado == "disponible"  && (cantActivos < maxActivos) && redAvg > 100 && redAvg - greenAvg > 50 && redAvg - blueAvg > 50)
+        {
+          ++cantActivos;
+          estado = "soga";
+          miCuerda = new Cuerda(posX, posY, this);
+          ++ordenSogas;
+          orden = ordenSogas;
+        } else if (estado == "soga" && (redAvg < 80 || redAvg - greenAvg < 30 || redAvg - blueAvg < 30))
+        {
+
+          miCuerda.destroy();
+          miCuerda = null;
+          --cantActivos;
+          estado = "disponible";
+        }
+      }
+    } else if (!debugCamera || debugMode)
+    {
+      if (dist(mouseX, mouseY, posX, posY) < grosor/2 && mouseApretado)
+      {
+        if (estado == "disponible"  && (cantActivos < maxActivos))
+        {
+          ++cantActivos;
+          estado = "soga";
+          miCuerda = new Cuerda(posX, posY, this);
+          ++ordenSogas;
+          orden = ordenSogas;
+        } else if (estado == "soga")
+        {
+
+          miCuerda.destroy();
+          miCuerda = null;
+          --cantActivos;
+          estado = "disponible";
+        }
       }
     }
 
-    if (estado == "soga")
+    if (!debugCamera)
     {
-      fill(255);
-      miCuerda.dibujar();
-    } else
-    {
-      fill(0);
-    }
-    if (estado == "soga" || estado == "disponible")
-    {
-      pushStyle();
-      noStroke();
-      ellipse(posX, posY, grosor, grosor);
-      popStyle();
+      if (estado == "soga")
+      {
+        if (debugMode)
+        {
+          fill(255);
+        } else
+        {
+          fill(0);
+        }
+      } else
+      {
+        fill(0);
+      }
+      if (estado == "soga" || estado == "disponible")
+      {
+        pushStyle();
+        noStroke();
+        ellipse(posX, posY, grosor, grosor);
+        popStyle();
+      }
     }
   }
+
 
   int getSocketHeight()
   {
@@ -64,3 +133,4 @@ class Socket //<>//
     return round(float(posX - 56) / ( float(width)/float(maSockets[0].length-1)));
   }
 }
+

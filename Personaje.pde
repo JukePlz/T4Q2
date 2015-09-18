@@ -12,6 +12,7 @@ class Personaje
   int ancho;
   int sprite;
   int spriteFrame;
+  int timerInvul;
   float rotacion;
   boolean invulnerable;
   String estado = "quieto";
@@ -24,6 +25,7 @@ class Personaje
     ancho = 50;
     sprite = 0;
     spriteFrame = 0;
+    timerInvul = 0;
     rotacion = 0;
     invulnerable = false;
     robertoLaCaja = new FBox(ancho, alto);  // Dimensiones originalales: 25x32
@@ -56,6 +58,11 @@ class Personaje
   {
     think();
 
+    if (timerInvul > 0)
+    {
+      --timerInvul;
+    }
+
     if (estado != "cayendo")
     {
       robertoLaCaja.setPosition(posX, posY);
@@ -74,6 +81,10 @@ class Personaje
     pushMatrix();
     translate(posX, posY);
     rotate(rotacion);
+    if (timerInvul % 10 < 2 && timerInvul != 0)
+    {
+      tint(255, 0, 0);
+    }
     image(robertoSprite[sprite][spriteFrame], 0, 0);
     animateSprite();
     popMatrix();
@@ -400,3 +411,4 @@ class Personaje
     }
   }
 }
+

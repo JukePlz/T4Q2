@@ -8,6 +8,12 @@ void debugMode()
     keyCodeOffset = 0;
   }
 
+if (key == '0')
+{
+  debugCamera = !debugCamera; // TODO: Agregar texto de debug
+  socketDrag = null;
+}
+
   if (key == '+' || key == '-')
   {
     if (key == '+' && diametroSocket < 80)
@@ -29,7 +35,7 @@ void debugMode()
     }
   }
 
-  if (keyCode == 97 + keyCodeOffset)                  // F1
+  if (keyCode == 112 + keyCodeOffset)                  // F1
   {
     debugColision = !debugColision;
     if (debugColision)
@@ -40,7 +46,7 @@ void debugMode()
       debugText = "Debug Colisiones: OFF";
     }
     textTimer = 120;
-  } else if (keyCode == 98 + keyCodeOffset)           // F2
+  } else if (keyCode == 113 + keyCodeOffset)           // F2
   {
     mappingHelper = !mappingHelper;
     if (mappingHelper)
@@ -51,28 +57,28 @@ void debugMode()
       debugText = "Mapping Helper: OFF";
     }
     textTimer = 120;
-  } else if (keyCode == 101 + keyCodeOffset)           // F5
+  } else if (keyCode == 116 + keyCodeOffset)           // F5
   {
     lightSystem = 1;
     lightIntensity = 1;
     darkness = loadImage("data/luces/lowLight.png");
     debugText = "Intensidad Luz: Baja";
     textTimer = 120;
-  } else if (keyCode == 102 + keyCodeOffset)           // F6
+  } else if (keyCode == 117 + keyCodeOffset)           // F6
   {
     lightSystem = 1;
     lightIntensity = 2;
     darkness = loadImage("data/luces/midLight.png");
     debugText = "Intensidad Luz: Media";
     textTimer = 120;
-  } else if (keyCode == 103 + keyCodeOffset)           // F7
+  } else if (keyCode == 118 + keyCodeOffset)           // F7
   {
     lightSystem = 1;
     lightIntensity = 3;
     darkness = loadImage("data/luces/highLight.png");
     debugText = "Intensidad Luz: Alta";
     textTimer = 120;
-  } else if (keyCode == 104 + keyCodeOffset)           // F8
+  } else if (keyCode == 119 + keyCodeOffset)           // F8
   {
     lightSystem = 0;
     darkness = null;

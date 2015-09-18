@@ -28,6 +28,7 @@ void inicializar()
   mundo = new FWorld();  // CREA EL MUNDO PARA LA LIBRERIA DE FISICA
   mundo.clear();
   maSockets = new Socket[8][10];
+  socketDrag = null;
   magma = new Lava();
   piedra = new Piedra(250, 25, 50);  // Constructor (POSX, POSY, RADIO)
   roberto = new Personaje(int(random(width/4, width*3/4)), height-32); // Constructor (POSX, POSY)
@@ -55,14 +56,39 @@ void inicializar()
 
   // MAPA DE SOCKETS
   int[][] socketMap = 
-    {{0, 0, 0, 1, 2, 1, 0, 0, 0, 0}, 
-    {0, 0, 1, 2, 1, 2, 1, 0, 0, 0}, 
-    {0, 0, 2, 1, 2, 1, 2, 0, 0, 0}, 
-    {0, 0, 1, 2, 1, 2, 2, 0, 0, 0}, 
-    {0, 2, 2, 1, 2, 1, 1, 2, 0, 0}, 
-    {0, 1, 2, 2, 1, 2, 2, 1, 0, 0}, 
-    {0, 2, 1, 2, 2, 1, 1, 2, 0, 0}, 
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
+  {
+    {
+      0, 0, 0, 1, 2, 1, 0, 0, 0, 0
+    }
+    , 
+    {
+      0, 0, 1, 2, 1, 2, 1, 0, 0, 0
+    }
+    , 
+    {
+      0, 0, 2, 1, 2, 1, 2, 0, 0, 0
+    }
+    , 
+    {
+      0, 0, 1, 2, 1, 2, 2, 0, 0, 0
+    }
+    , 
+    {
+      0, 2, 2, 1, 2, 1, 1, 2, 0, 0
+    }
+    , 
+    {
+      0, 1, 2, 2, 1, 2, 2, 1, 0, 0
+    }
+    , 
+    {
+      0, 2, 1, 2, 2, 1, 1, 2, 0, 0
+    }
+    , 
+    {
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    }
+  };
 
   // SETEO DE SOCKETS
   for (int i = 0; i < maSockets.length; i++)
@@ -78,4 +104,19 @@ void inicializar()
       }
     }
   }
+
+  File screenCap = new File("C:/screenCap.jpg");
+
+  if (screenCap.exists())
+  {
+    capturaKinect = loadImage("C:/screenCap.jpg");
+    capturaKinectTemp = capturaKinect;
+  } else
+  {
+    println("No se encontro screenCap en C:/");
+    println("kinectCap debe estar ejecutandose");
+    println("kinectCap y este Sketch deben poder escribir en C:/");
+    exit();
+  }
 }
+
