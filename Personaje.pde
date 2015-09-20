@@ -56,39 +56,42 @@ class Personaje
 
   void dibujar()
   {
-    think();
+    if (gameOver == 0)
+    {
+      think();
 
-    if (timerInvul > 0)
-    {
-      --timerInvul;
-    }
+      if (timerInvul > 0)
+      {
+        --timerInvul;
+      }
 
-    if (estado != "cayendo")
-    {
-      robertoLaCaja.setPosition(posX, posY);
-      robertoLaCaja.setRotation(rotacion);
-    } else if (estado == "cayendo")
-    {
-      posX = int(robertoLaCajaTemp.getX());
-      posY = int(robertoLaCajaTemp.getY());
-    }
+      if (estado != "cayendo")
+      {
+        robertoLaCaja.setPosition(posX, posY);
+        robertoLaCaja.setRotation(rotacion);
+      } else if (estado == "cayendo")
+      {
+        posX = int(robertoLaCajaTemp.getX());
+        posY = int(robertoLaCajaTemp.getY());
+      }
 
-    pushStyle();
-    rectMode(CENTER);
-    imageMode(CENTER);
-    noStroke();
-    fill(255, 0, 0);
-    pushMatrix();
-    translate(posX, posY);
-    rotate(rotacion);
-    if (timerInvul % 10 < 2 && timerInvul != 0)
-    {
-      tint(255, 0, 0);
+      pushStyle();
+      rectMode(CENTER);
+      imageMode(CENTER);
+      noStroke();
+      fill(255, 0, 0);
+      pushMatrix();
+      translate(posX, posY);
+      rotate(rotacion);
+      if (timerInvul % 10 < 2 && timerInvul != 0)
+      {
+        tint(255, 0, 0);
+      }
+      image(robertoSprite[sprite][spriteFrame], 0, 0);
+      animateSprite();
+      popMatrix();
+      popStyle();
     }
-    image(robertoSprite[sprite][spriteFrame], 0, 0);
-    animateSprite();
-    popMatrix();
-    popStyle();
   }
 
   void think()

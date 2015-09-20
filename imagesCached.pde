@@ -8,6 +8,11 @@ boolean imagesCached()
     check = false;
   }
 
+  if (bug.width == -1 || kinect.width == -1 || noKinect.width == -1 || map.width == -1 || noMap.width == -1 || colision.width == -1 || noColision.width == -1)
+  {
+    check = false;
+  }
+
   for (int i = 0; i < roca.length; i++)
   {
     if (roca[i].width == 0)
@@ -58,6 +63,12 @@ boolean imagesCached()
     exit();
   }
 
+  if (bug.width == -1 || kinect.width == -1 || noKinect.width == -1 || map.width == -1 || noMap.width == -1 || colision.width == -1 || noColision.width == -1)
+  {
+    println("ERROR EN CARGA DE RECURSOS: ICONOS.");
+    exit();
+  }
+
   for (int i = 0; i < roca.length; i++)
   {
     if (roca[i].width == -1)
@@ -92,7 +103,8 @@ boolean imagesCached()
   {
     if (ganaste[i].width == -1)
     {
-      check = false;
+      println("ERROR EN CARGA DE RECURSOS: PANTALLA DE GANASTE.");
+      exit();
     }
   }
 
@@ -100,10 +112,12 @@ boolean imagesCached()
   {
     if (perdiste[i].width == -1)
     {
-      check = false;
+      println("ERROR EN CARGA DE RECURSOS: PANTALLA DE PERDISTE.");
+      exit();
     }
   }
 
   imagesCached = check;
   return check;
 }
+

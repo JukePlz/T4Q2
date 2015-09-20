@@ -1,5 +1,15 @@
 void debugMode()
 {
+  //println(key, keyCode);
+    
+  if (key == 5)
+  {
+   gameOver = 1; 
+  } else if (key == 4)
+  {
+    gameOver = 2;
+  }
+  
   if (renderType == JAVA2D)
   {
     keyCodeOffset = 15;
@@ -8,11 +18,34 @@ void debugMode()
     keyCodeOffset = 0;
   }
 
-if (key == '0')
-{
-  debugCamera = !debugCamera; // TODO: Agregar texto de debug
-  socketDrag = null;
-}
+  if (key == '0')
+  {
+    debugCamera = !debugCamera;
+    socketDrag = null;
+    
+    if (debugCamera)
+    {
+      debugText = "Vista: Kinect";
+    } else
+    {
+      debugText = "Vista: Juego";
+    }
+    textTimer = 120;
+  }
+
+  if (key == '9')
+  {
+    kinectDetection = !kinectDetection;
+    
+    if (kinectDetection)
+    {
+      debugText = "Modo de deteccion: Kinect";
+    } else
+    {
+      debugText = "Modo de deteccion: Mouse";
+    }
+    textTimer = 120;
+  }
 
   if (key == '+' || key == '-')
   {
@@ -38,6 +71,7 @@ if (key == '0')
   if (keyCode == 112 + keyCodeOffset)                  // F1
   {
     debugColision = !debugColision;
+    
     if (debugColision)
     {
       debugText = "Debug Colisiones: ON";
@@ -49,6 +83,7 @@ if (key == '0')
   } else if (keyCode == 113 + keyCodeOffset)           // F2
   {
     mappingHelper = !mappingHelper;
+    
     if (mappingHelper)
     {
       debugText = "Mapping Helper: ON";
@@ -86,3 +121,4 @@ if (key == '0')
     textTimer = 120;
   }
 }
+

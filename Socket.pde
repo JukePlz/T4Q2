@@ -22,7 +22,7 @@ class Socket
 
   void dibujar()
   {
-    if (!debugMode || debugCamera)
+    if (kinectDetection || debugCamera)
     {
       if (estado == "soga" || estado == "disponible")
       {
@@ -44,22 +44,25 @@ class Socket
         greenAvg = (greenAvg/socketArea.pixels.length);
         blueAvg = (blueAvg/socketArea.pixels.length);
 
+        /*
         if (redAvg > 100)
-        {
-          // println(redAvg, greenAvg, blueAvg);
-        }
+         {
+         println(redAvg, greenAvg, blueAvg);
+         }
+         */
 
 
         if (debugCamera)
         {
           pushStyle();
           fill(redAvg, greenAvg, blueAvg);
+          stroke(150, 255, 150);
           rectMode(CENTER);
           rect(round(posXDeteccion*1.6), round(posYDeteccion*1.6), int(grosorDeteccion), int(grosorDeteccion));
           popStyle();
         }
 
-        if (estado == "disponible"  && (cantActivos < maxActivos) && redAvg > 100 && redAvg - greenAvg > 50 && redAvg - blueAvg > 50)
+        if (estado == "disponible"  && (cantActivos < maxActivos || debugMode) && redAvg > 100 && redAvg - greenAvg > 50 && redAvg - blueAvg > 50)
         {
           ++cantActivos;
           estado = "soga";
@@ -75,11 +78,11 @@ class Socket
           estado = "disponible";
         }
       }
-    } else if (!debugCamera || debugMode)
+    } else if (!kinectDetection)
     {
       if (dist(mouseX, mouseY, posX, posY) < grosor/2 && mouseApretado)
       {
-        if (estado == "disponible"  && (cantActivos < maxActivos))
+        if (estado == "disponible"  && (cantActivos < maxActivos || debugMode))
         {
           ++cantActivos;
           estado = "soga";
@@ -99,26 +102,29 @@ class Socket
 
     if (!debugCamera)
     {
+      pushStyle();
       if (estado == "soga")
       {
         if (debugMode)
         {
-          fill(255);
+          strokeWeight(2);
+          stroke(255, 0, 0);
+          fill(0);
         } else
         {
-          fill(0);
+          noStroke();
+          fill(0);                 // Este fill podria no estar en la version final, para proyectar sobre la estaca o gancho al colocarlos.
         }
       } else
       {
+        noStroke();
         fill(0);
       }
       if (estado == "soga" || estado == "disponible")
       {
-        pushStyle();
-        noStroke();
         ellipse(posX, posY, grosor, grosor);
-        popStyle();
       }
+      popStyle();
     }
   }
 

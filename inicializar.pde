@@ -116,7 +116,10 @@ void inicializar()
     println("No se encontro screenCap en C:/");
     println("kinectCap debe estar ejecutandose");
     println("kinectCap y este Sketch deben poder escribir en C:/");
-    exit();
+
+    capturaKinect = createImage(640, 480, RGB);
+    capturaKinectTemp = capturaKinect;
+    //exit();
   }
 }
 

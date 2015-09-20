@@ -43,11 +43,12 @@ boolean debugMode;
 boolean mappingHelper;
 boolean debugColision;
 boolean debugCamera;
+boolean kinectDetection;
 boolean mouseApretado;
 String debugText;
 String renderType;
 
-// VARIABLES GRAFICOS
+// GRAFICOS
 PImage pared;
 PImage cracks;
 PImage lava;
@@ -61,6 +62,16 @@ PImage[] roca = new PImage[4];
 PImage[] magmaRoca = new PImage[4];
 PImage[][] robertoSprite = new PImage[7][5];
 
+// ICONOS
+PImage bug;
+PImage kinect;
+PImage noKinect;
+PImage map;
+PImage noMap;
+PImage colision;
+PImage noColision;
+
+// BUFFER DE KINECTCAP
 PImage capturaKinect = createImage(0, 0, RGB);
 PImage capturaKinectTemp = createImage(0, 0, RGB);
 
@@ -119,6 +130,14 @@ void setup()
   magmaRoca[2] = requestImage("data/magmaRoca3.png");
   magmaRoca[3] = requestImage("data/magmaRoca4.png");
 
+  bug = requestImage("data/iconos/bug.png");
+  kinect = requestImage("data/iconos/kinect.png");
+  noKinect = requestImage("data/iconos/noKinect.png");
+  map = requestImage("data/iconos/map.png");
+  noMap = requestImage("data/iconos/noMap.png");
+  colision = requestImage("data/iconos/colision.png");
+  noColision = requestImage("data/iconos/noColision.png");
+
   if (lightSystem == 1)
   {
     aura = loadImage("data/luces/aura.png");
@@ -167,7 +186,7 @@ void draw()
     if (frameCount % FPS/2 == 0) // Actualizamos el nombre de la ventana cada medio segundo (30 frames)
     {
       // FPS en marco de ventana
-      frame.setTitle(int(frameRate) + " FPS" );  // La clase "frame" esta deprecada en processing 3.x por eso usamos "surface"
+      frame.setTitle(int(frameRate) + " FPS" );  // La clase "frame" esta deprecada en processing 3.x en ese caso reemplazar por "surface"
     }
 
     if ( vida < 1)
@@ -195,7 +214,6 @@ void draw()
     }
 
     mundo.step();  // CALCULAR FISICA
-
     pared();       // PARED FONDO
 
     if (socketDrag != null)
@@ -276,6 +294,35 @@ void draw()
 
     mouseApretado = false;
     contadorCracksRocas.step();
+
+    if (debugMode)
+    {
+      image(bug, width -bug.width - 5, 5);
+
+      if (kinectDetection)
+      {
+        image(kinect, width -kinect.width - 5, bug.height + 10);
+      } else
+      {
+        image(noKinect, width -noKinect.width - 5, bug.height + 10);
+      }
+
+      if (mappingHelper)
+      {
+        image(map, width -map.width - 5, bug.height + kinect.height + 15);
+      } else
+      {
+        image(noMap, width -noMap.width - 5, bug.height + kinect.height + 15);
+      }
+
+      if (debugColision)
+      {
+        image(colision, width -colision.width - 5, bug.height + kinect.height + map.height + 20);
+      } else
+      {
+        image(noColision, width -noColision.width - 5, bug.height + kinect.height + map.height + 20);
+      }
+    }
 
     if (debugText != null && textTimer > 0)  // TEXTO DE DEBUG EN PANTALLA
     {
@@ -368,6 +415,23 @@ void mousePressed()
 
 void keyPressed()
 {
+  if (key == '/')
+  {
+    debugMode = !debugMode;
+
+    if (debugMode)
+    {
+      debugText = "Modo Depuracion: Activado";
+    } else
+    {
+      debugColision = false;
+      debugCamera = false;
+      mappingHelper = false;
+      debugText = "Modo Depuracion: Desactivado";
+    }
+    textTimer = 120;
+  }
+
   if (debugMode)
   {
     debugMode();
