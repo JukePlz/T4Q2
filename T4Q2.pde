@@ -246,11 +246,7 @@ void draw()
       }
     }
 
-    if (gameOver == 0)
-    {
-      roberto.dibujar(); // PERSONAJE
-    }
-
+    roberto.dibujar(); // PERSONAJE
     piedra.dibujar();  // PIEDRAS
 
     if (lightSystem == 1)
@@ -301,26 +297,26 @@ void draw()
 
       if (kinectDetection)
       {
-        image(kinect, width -kinect.width - 5, bug.height + 10);
+        image(kinect, width -kinect.width - 5, bug.height + 25);
       } else
       {
-        image(noKinect, width -noKinect.width - 5, bug.height + 10);
+        image(noKinect, width -noKinect.width - 5, bug.height + 25);
       }
 
       if (mappingHelper)
       {
-        image(map, width -map.width - 5, bug.height + kinect.height + 15);
+        image(map, width -map.width - 5, bug.height + kinect.height + 30);
       } else
       {
-        image(noMap, width -noMap.width - 5, bug.height + kinect.height + 15);
+        image(noMap, width -noMap.width - 5, bug.height + kinect.height + 30);
       }
 
       if (debugColision)
       {
-        image(colision, width -colision.width - 5, bug.height + kinect.height + map.height + 20);
+        image(colision, width -colision.width - 5, bug.height + kinect.height + map.height + 35);
       } else
       {
-        image(noColision, width -noColision.width - 5, bug.height + kinect.height + map.height + 20);
+        image(noColision, width -noColision.width - 5, bug.height + kinect.height + map.height + 35);
       }
     }
 
@@ -421,13 +417,13 @@ void keyPressed()
 
     if (debugMode)
     {
-      debugText = "Modo Depuracion: Activado";
+      debugText = "Depuracion: Activada";
     } else
     {
       debugColision = false;
       debugCamera = false;
       mappingHelper = false;
-      debugText = "Modo Depuracion: Desactivado";
+      debugText = "Depuracion: Desactivada";
     }
     textTimer = 120;
   }

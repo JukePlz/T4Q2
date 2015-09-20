@@ -2,10 +2,10 @@ void debugMode()
 {
   //println(key, keyCode);
     
-  if (key == 5)
+  if (key == '5')
   {
    gameOver = 1; 
-  } else if (key == 4)
+  } else if (key == '4')
   {
     gameOver = 2;
   }
@@ -33,16 +33,16 @@ void debugMode()
     textTimer = 120;
   }
 
-  if (key == '9')
+  if (key == '3')
   {
     kinectDetection = !kinectDetection;
     
     if (kinectDetection)
     {
-      debugText = "Modo de deteccion: Kinect";
+      debugText = "Deteccion: Kinect";
     } else
     {
-      debugText = "Modo de deteccion: Mouse";
+      debugText = "Deteccion: Mouse";
     }
     textTimer = 120;
   }
@@ -68,19 +68,19 @@ void debugMode()
     }
   }
 
-  if (keyCode == 112 + keyCodeOffset)                  // F1
+  if (key == '1')
   {
     debugColision = !debugColision;
     
     if (debugColision)
     {
-      debugText = "Debug Colisiones: ON";
+      debugText = "Ver Colisiones: ON";
     } else
     {
-      debugText = "Debug Colisiones: OFF";
+      debugText = "Ver Colisiones: OFF";
     }
     textTimer = 120;
-  } else if (keyCode == 113 + keyCodeOffset)           // F2
+  } else if (key == '2')
   {
     mappingHelper = !mappingHelper;
     

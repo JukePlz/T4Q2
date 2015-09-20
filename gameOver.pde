@@ -3,8 +3,6 @@ int timer2;
 
 void gameOver(int state)
 {
-  vida = 0;
-
   pushStyle();
   if (state == 1)
   {
