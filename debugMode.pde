@@ -2,10 +2,10 @@ void debugMode()
 {
   //println(key, keyCode);
     
-  if (key == '5')
+  if (key == '8')
   {
    gameOver = 1; 
-  } else if (key == '4')
+  } else if (key == '7')
   {
     gameOver = 2;
   }

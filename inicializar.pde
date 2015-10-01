@@ -27,7 +27,6 @@ void inicializar()
 
   mundo = new FWorld();  // CREA EL MUNDO PARA LA LIBRERIA DE FISICA
   mundo.clear();
-  maSockets = new Socket[8][10];
   socketDrag = null;
   magma = new Lava();
   piedra = new Piedra(250, 25, 50);  // Constructor (POSX, POSY, RADIO)
@@ -54,7 +53,6 @@ void inicializar()
   mundo.setGravity( 0, 1000 );
   mundo.setGrabbable(false);
 
-  // MAPA DE SOCKETS
   int[][] socketMap = 
   {
     {
@@ -90,17 +88,17 @@ void inicializar()
     }
   };
 
-  // SETEO DE SOCKETS
+  // REINICIO DE ESTADOS DE SOCKETS
   for (int i = 0; i < maSockets.length; i++)
   {
     for (int a = 0; a < maSockets[0].length; a++)
     {
       if (socketMap[i][a] <= 1 )
       {
-        maSockets[i][a] = new Socket(width/(maSockets[0].length -1) * a +56, height/(maSockets.length -1) * i +16, "oculto" ); // Constructor (POSX, POSY, ESTADO)
+        maSockets[i][a].estado = "oculto"; // Constructor (POSX, POSY, ESTADO)
       } else if (socketMap[i][a] == 2 )
       {
-        maSockets[i][a] = new Socket(width/(maSockets[0].length -1) * a +56, height/(maSockets.length -1) * i +16, "disponible" ); // Constructor (POSX, POSY, ESTADO)
+        maSockets[i][a].estado = "disponible"; // Constructor (POSX, POSY, ESTADO)
       }
     }
   }

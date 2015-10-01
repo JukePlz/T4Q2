@@ -1,6 +1,9 @@
 # Scrap folder
 IGNORE/
 
+# No index flag fiiles
+.nomedia
+
 # Image editor sources
 *.psd
 *.pdn

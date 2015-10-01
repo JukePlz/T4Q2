@@ -229,8 +229,10 @@ void draw()
       {
         int distanciaMaxX = (width/(maSockets[0].length -1)/2);
         int distanciaMaxY = (height/(maSockets.length -1)/2);
-        socketDrag.posXDeteccion = int((max(min(mouseX, width/(maSockets[0].length -1) * socketDrag.getSocketWidth() +56 + distanciaMaxX), width/(maSockets[0].length -1) * socketDrag.getSocketWidth() +56 - distanciaMaxX))/1.6);
-        socketDrag.posYDeteccion = int((max(min(mouseY, height/(maSockets.length -1) * socketDrag.getSocketHeight() +16 + distanciaMaxY), height/(maSockets.length -1) * socketDrag.getSocketHeight() +16 - distanciaMaxY))/1.6);
+        //socketDrag.posXDeteccion = int((max(min(mouseX, width/(maSockets[0].length -1) * socketDrag.getSocketWidth() +56 + distanciaMaxX), width/(maSockets[0].length -1) * socketDrag.getSocketWidth() +56 - distanciaMaxX))/1.6);
+        // socketDrag.posYDeteccion = int((max(min(mouseY, height/(maSockets.length -1) * socketDrag.getSocketHeight() +16 + distanciaMaxY), height/(maSockets.length -1) * socketDrag.getSocketHeight() +16 - distanciaMaxY))/1.6);
+        socketDrag.posXDeteccion = int(mouseX/1.6);
+        socketDrag.posYDeteccion = int(mouseY/1.6);
       }
     }
 
@@ -293,6 +295,8 @@ void draw()
 
     if (debugMode)
     {
+      pushStyle();
+      tint(255, 200);
       image(bug, width -bug.width - 5, 5);
 
       if (kinectDetection)
@@ -318,6 +322,7 @@ void draw()
       {
         image(noColision, width -noColision.width - 5, bug.height + kinect.height + map.height + 35);
       }
+      popStyle();
     }
 
     if (debugText != null && textTimer > 0)  // TEXTO DE DEBUG EN PANTALLA
