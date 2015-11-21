@@ -1,15 +1,26 @@
-// Processing 2.2 + Fisica
+// Processing 2.2 + Fisica + Keystone
 // Requiere kinectCap en ejecucion
 
 // IMPORTS
 import fisica.*;
+import ddf.minim.*;
+import deadpixel.keystone.*;
 
 // FISICA
 FWorld mundo;
 FLine bordeIzq;
 FLine bordeDer;
 
-// OBJETOS
+// KEYSTONE
+Keystone ks;
+CornerPinSurface mapping;
+
+// MINIM
+Minim minim;
+AudioPlayer player1; 
+AudioPlayer player2; 
+
+// OTROS OBJETOS
 Socket[][] maSockets;
 Socket socketDrag;
 Lava magma;
@@ -75,6 +86,9 @@ PImage noColision;
 PImage capturaKinect = createImage(0, 0, RGB);
 PImage capturaKinectTemp = createImage(0, 0, RGB);
 
+// PGGRAPHICS MAPPING
+PGraphics graph;
+
 // CONSTANTES
 final int IDLE = 0;
 final int IDLE_2 = 1;
@@ -101,6 +115,11 @@ void setup()
   frame.setTitle("Inicializando...");
 
   Fisica.init(this);
+  ks = new Keystone(this);
+  minim = new Minim(this);
+
+  player1 = minim.loadFile("data/1.WAV");
+  player2 = minim.loadFile("data/piedra.mp3");
 
   lava = requestImage("data/lava.png");
   pared = requestImage("data/pared.png");
@@ -170,17 +189,36 @@ void setup()
   configuracion();
   inicializar();
 
+  player1.loop();
+  player1.play();
+  player1.setGain(-20);
+
+  mapping = ks.createCornerPinSurface( 1024, 768, 20 );
+  graph = createGraphics( 1024, 768, P3D);
+
+
   text("", 0, 0); // PRECACHE DE LA FUNCION
 }
 
 void draw()
 {
+  background(0);
+  graph.beginDraw();
+  graph.clear();
+
+  if (!player1.isPlaying())
+  {
+    player1.rewind();
+    player1.play();
+  }
+
+
   if (imagesCached == true)
   {
 
     if (lightSystem == 2)
     {
-      pointLight(200+contadorLights.step(), 200, 200, roberto.posX, roberto.posY, 120+contadorLights.step());
+      graph.pointLight(200+contadorLights.step(), 200, 200, roberto.posX, roberto.posY, 120+contadorLights.step());
     }
 
     if (frameCount % FPS/2 == 0) // Actualizamos el nombre de la ventana cada medio segundo (30 frames)
@@ -253,10 +291,10 @@ void draw()
 
     if (lightSystem == 1)
     {
-      pushStyle();
-      imageMode(CENTER);
-      image(darkness, roberto.posX, roberto.posY);
-      popStyle();
+      graph.pushStyle();
+      graph.imageMode(CENTER);
+      graph.image(darkness, roberto.posX, roberto.posY);
+      graph.popStyle();
     }
 
     magma.dibujar(); // LAVA
@@ -276,6 +314,12 @@ void draw()
 
     if (debugCamera)
     {
+      graph.endDraw();
+      mapping.render( graph );
+    }
+
+    if (debugCamera)
+    {
       if (capturaKinect.width > 0)
       {
         image(capturaKinect, 0, 0, width, height);
@@ -290,8 +334,19 @@ void draw()
       }
     }
 
+    if (!debugCamera)
+    {
+      graph.endDraw();
+      mapping.render( graph );
+    }
+
     mouseApretado = false;
     contadorCracksRocas.step();
+
+
+
+
+
 
     if (debugMode)
     {
@@ -432,6 +487,16 @@ void keyPressed()
     }
     textTimer = 120;
   }
+  if ( key == 'c' )
+  {
+    ks.toggleCalibration();
+  } else if ( key == 's' )
+  {
+    ks.save();
+  } else if ( key == 'l' )
+  {
+    ks.load();
+  } 
 
   if (debugMode)
   {
@@ -479,6 +544,12 @@ void contactStarted( FContact contact )
   if ((cuerpo1.getName().substring(0, min(cuerpo1.getName().length(), 4)).equals("roca") && cuerpo2.getName() == "roberto") || (cuerpo1.getName() == "roberto" && cuerpo2.getName().substring(0, min(cuerpo2.getName().length(), 4)).equals("roca"))) 
   {
     roberto.estado = "colision";
+
+    if (!player2.isPlaying())
+    {
+      player2.rewind();
+      player2.play();
+    }
 
     if (roberto.invulnerable == false && roberto.timerInvul == 0)
     {

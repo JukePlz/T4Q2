@@ -37,10 +37,10 @@ class Lava
       }
     }
 
-    pushStyle();
-    imageMode(CENTER);
-    image(lava, width/2 + sway, alturaLava + 1200);
-    popStyle();
+    graph.pushStyle();
+    graph.imageMode(CENTER);
+    graph.image(lava, width/2 + sway, alturaLava + 1200);
+    graph.popStyle();
   }
 
   void subir()

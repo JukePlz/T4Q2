@@ -1,8 +1,8 @@
 void pared()
 {
-  pushStyle();
-  image(pared, 0, 0);
-  tint(255, contadorCracksPared.step());
-  image(cracks, 0, 0);
-  popStyle();
+  graph.pushStyle();
+  graph.image(pared, 0, 0);
+  graph.tint(255, contadorCracksPared.step());
+  graph.image(cracks, 0, 0);
+  graph.popStyle();
 }

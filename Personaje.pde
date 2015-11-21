@@ -75,22 +75,22 @@ class Personaje
         posY = int(robertoLaCajaTemp.getY());
       }
 
-      pushStyle();
-      rectMode(CENTER);
-      imageMode(CENTER);
-      noStroke();
-      fill(255, 0, 0);
-      pushMatrix();
-      translate(posX, posY);
-      rotate(rotacion);
+      graph.pushStyle();
+      graph.rectMode(CENTER);
+      graph.imageMode(CENTER);
+      graph.noStroke();
+      graph.fill(255, 0, 0);
+      graph.pushMatrix();
+      graph.translate(posX, posY);
+      graph.rotate(rotacion);
       if (timerInvul % 10 < 2 && timerInvul != 0)
       {
-        tint(255, 0, 0);
+        graph.tint(255, 0, 0);
       }
-      image(robertoSprite[sprite][spriteFrame], 0, 0);
+      graph.image(robertoSprite[sprite][spriteFrame], 0, 0);
       animateSprite();
-      popMatrix();
-      popStyle();
+      graph.popMatrix();
+      graph.popStyle();
     }
   }
 

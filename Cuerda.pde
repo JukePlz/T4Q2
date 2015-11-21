@@ -47,18 +47,18 @@ class Cuerda
 
   void dibujar()
   {
-    pushStyle();
-    imageMode(CENTER);
+    graph.pushStyle();
+    graph.imageMode(CENTER);
     for (int i = 0; i < cuerda.length; i++)
     {
-      pushMatrix();
-      translate(cuerda[i].getX(), cuerda[i].getY());
-      rotate(cuerda[i].getRotation());
-      image(sogaSegmento, 0, 0);
-      popMatrix();
+      graph.pushMatrix();
+      graph.translate(cuerda[i].getX(), cuerda[i].getY());
+      graph.rotate(cuerda[i].getRotation());
+      graph.image(sogaSegmento, 0, 0);
+      graph.popMatrix();
     }
 
-    popStyle();
+    graph.popStyle();
   }
 
   void destroy()

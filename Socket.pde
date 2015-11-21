@@ -102,29 +102,29 @@ class Socket
 
     if (!debugCamera)
     {
-      pushStyle();
+      graph.pushStyle();
       if (estado == "soga")
       {
         if (debugMode)
         {
-          strokeWeight(2);
-          stroke(255, 0, 0);
-          fill(0);
+          graph.strokeWeight(2);
+          graph.stroke(255, 0, 0);
+          graph.fill(0);
         } else
         {
-          noStroke();
-          fill(0);                 // Este fill podria no estar en la version final, para proyectar sobre la estaca o gancho al colocarlos.
+          graph.noStroke();
+          graph.fill(0);                 // Este fill podria no estar en la version final, para proyectar sobre la estaca o gancho al colocarlos.
         }
       } else
       {
-        noStroke();
-        fill(0);
+        graph.noStroke();
+        graph.fill(0);
       }
       if (estado == "soga" || estado == "disponible")
       {
-        ellipse(posX, posY, grosor, grosor);
+        graph.ellipse(posX, posY, grosor, grosor);
       }
-      popStyle();
+      graph.popStyle();
     }
   }
 

@@ -35,28 +35,28 @@ class Piedra
 
       if (objetoi.getName() != null && objetoi.getName().substring(0, min(objetoi.getName().length(), 4)).equals("roca"))
       {
-        pushStyle();
-        fill(color(#c87e4d));
-        noStroke();
-        imageMode(CENTER);
+        graph.pushStyle();
+        graph.fill(color(#c87e4d));
+        graph.noStroke();
+        graph.imageMode(CENTER);
 
         if (lightSystem == 1)
         {
-          blendMode(ADD);
-          image(aura, objetoi.getX(), objetoi.getY());
-          blendMode(BLEND);
+          graph.blendMode(ADD);
+          graph.image(aura, objetoi.getX(), objetoi.getY());
+          graph.blendMode(BLEND);
         }
 
-        pushMatrix();
-        translate(objetoi.getX(), objetoi.getY());
-        rotate(objetoi.getRotation());
-        image(roca[int(objetoi.getName().substring(min(objetoi.getName().length(), 4)))], 0, 0);
-        pushStyle();
-        tint(255, contadorCracksRocas.numero);
-        image(magmaRoca[int(objetoi.getName().substring(min(objetoi.getName().length(), 4)))], 0, 0);
-        popStyle();
-        popMatrix();
-        popStyle();
+        graph.pushMatrix();
+        graph.translate(objetoi.getX(), objetoi.getY());
+        graph.rotate(objetoi.getRotation());
+        graph.image(roca[int(objetoi.getName().substring(min(objetoi.getName().length(), 4)))], 0, 0);
+        graph.pushStyle();
+        graph.tint(255, contadorCracksRocas.numero);
+        graph.image(magmaRoca[int(objetoi.getName().substring(min(objetoi.getName().length(), 4)))], 0, 0);
+        graph.popStyle();
+        graph.popMatrix();
+        graph.popStyle();
       }
     }
   }
